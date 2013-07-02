@@ -17,20 +17,10 @@ import org.apache.hadoop.mapreduce.Mapper;
  * @author nilesh
  *
  */
-public class PreprocessMapper {
+public class PreprocessMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
 
-    public static class Map extends Mapper<LongWritable, Text, LongWritable, ArrayWritable> {
-
-        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            StringTokenizer tokenizer = new StringTokenizer(value.toString(), ",");
-            String id2 = tokenizer.nextToken();
-            int count = Integer.parseInt(tokenizer.nextToken());
-            int total = Integer.parseInt(tokenizer.nextToken());
-            int max = Integer.parseInt(tokenizer.nextToken());
-            int min = Integer.parseInt(tokenizer.nextToken());
-
-            int weight = total + max * count;
-            context.write(new LongWritable(key), new ArrayWritable())
-        }
+    @Override
+    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        context.write(key, value);
     }
 }

@@ -25,7 +25,7 @@ public class PreprocessRunner {
 
     private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
 
-    public PreprocessRunner(String edgeListLocation, String adjacencyOutputLocation, String qVectorOutputLocation, float alpha) {
+    public void run(String edgeListLocation, String adjacencyOutputLocation, String qVectorOutputLocation, float alpha) {
         Configuration configuration = new Configuration();
         configuration.set("qvector", qVectorOutputLocation);
         configuration.set("alpha", "" + alpha);

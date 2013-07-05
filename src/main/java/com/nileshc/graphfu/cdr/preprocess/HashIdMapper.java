@@ -30,8 +30,7 @@ public class HashIdMapper extends Mapper<LongWritable, Text, LongWritable, Text>
 
     @Override
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        String id1 = "", id2 = "";
-        id1 = value.toString();
+        String id1 = value.toString();
         context.write(new LongWritable(currentID), new Text(id1));
         ++currentID;
     }

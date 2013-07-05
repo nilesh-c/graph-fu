@@ -4,7 +4,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.nileshc</groupId>
-    <artifactId>GraphFu</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -35,4 +34,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <artifactId>graphfu</artifactId>
 </project>

@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class HashIdMapper extends Mapper<Text, Text, HashIdCompositeKey, Text> {
+public class HashIdMapper extends Mapper<Text, Text, LongWritable, Text> {
 
     private static final Logger LOG = Logger.getLogger(HashIdMapper.class);
     private long currentID;
@@ -29,9 +29,9 @@ public class HashIdMapper extends Mapper<Text, Text, HashIdCompositeKey, Text> {
     public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
         StringTokenizer tokenizer = new StringTokenizer(value.toString(), ",");
         String id2 = tokenizer.nextToken();
-        context.write(new HashIdCompositeKey(currentID, key.toString()), key);
+        context.write(new LongWritable(currentID), key);
         ++currentID;
-        context.write(new HashIdCompositeKey(currentID, key.toString()), new Text(id2));
+        context.write(new LongWritable(currentID), new Text(id2));
         ++currentID;
     }
 }

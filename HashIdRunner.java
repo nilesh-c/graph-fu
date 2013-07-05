@@ -13,9 +13,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
@@ -46,12 +44,7 @@ public class HashIdRunner {
 
             job.setMapperClass(HashIdMapper.class);
             job.setReducerClass(HashIdReducer.class);
-            
-            job.setMapOutputKeyClass(HashIdCompositeKey.class);
-            job.setPartitionerClass(HashIdKeyPartitioner.class);
-            job.setGroupingComparatorClass(HashIdKeyGroupingComparator.class);
-            job.setSortComparatorClass(HashIdCompositeKeyComparator.class);
-            
+
             //set MultipleOutputs
             MultipleOutputs.addNamedOutput(job, vidmap, TextOutputFormat.class, LongWritable.class, Text.class);
             
@@ -70,10 +63,35 @@ public class HashIdRunner {
         }
 
         LOG.info("Finished");
+        conf.setOutputKeyClass(Text.class);
+        conf.setOutputValueClass(Text.class);
+
+        conf.setMapOutputKeyClass(IntWritable.class);
+        conf.setMapOutputValueClass(Text.class);
+
+        conf.setMapperClass(HashIdMapper.class);
+        conf.setReducerClass(HashIdReducer.class);
+
+        conf.setInputFormat(NLineInputFormat.class);
+        conf.setOutputFormat(MultiDirOutputFormat.class);
+
+        conf.setInt("mapred.line.input.format.linespermap", linespermap);
+        conf.set("GraphParser", graphparser.getClass().getName());
+        conf.set("VidParser", vidparser.getClass().getName());
+        conf.set("VdataParser", vdataparser.getClass().getName());
+
+        FileInputFormat.setInputPaths(conf, new Path(inputpath));
+        FileOutputFormat.setOutputPath(conf, new Path(outputpath));
+
         LOG.info("====== Job: Create integer Id maps for vertices ==========");
         LOG.info("Input = " + inputpath);
         LOG.info("Output = " + outputpath);
-        LOG.debug("Lines per map = " + linespermap);
-        LOG.info("=======================Done ==============================\n");
+        LOG.debug("Lines per map = 6000000");
+        LOG.debug("GraphParser = " + graphparser.getClass().getName());
+        LOG.debug("VidParser = " + vidparser.getClass().getName());
+        LOG.debug("VdataParser = " + vdataparser.getClass().getName());
+        LOG.info("==========================================================");
+        JobClient.runJob(conf);
+        LOG.info("=======================Done =====================\n");
     }
 }

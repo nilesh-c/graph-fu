@@ -17,31 +17,26 @@ import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
  *
  * @author nilesh
  */
-public class HashIdReducer extends Reducer<HashIdCompositeKey, Text, NullWritable, NullWritable> {
+public class HashIdReducer extends Reducer<LongWritable, Text, NullWritable, NullWritable> {
 
     protected MultipleOutputs multipleOutputs = null;
-    
+
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         multipleOutputs = new MultipleOutputs(context);
     }
-    
+
     @Override
-    public void reduce(HashIdCompositeKey key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+    public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
         Configuration conf = context.getConfiguration();
         String vidmap = conf.get("vidmap");
         long splitsize = Long.parseLong(conf.get("mapred.line.input.format.linespermap"));
-        long baseid = key.getKey();
+        long baseid = key.get();
         int split = 0;
-        String temp = "";
         for (Text value : values) {
-            if(temp.toString().compareTo(value.toString()) == 0) {
-                continue;
-            }
             long newId = baseid + splitsize * split;
             multipleOutputs.write(vidmap, new LongWritable(newId), value);
             split++;
-            temp = value.toString();
         }
     }
 }

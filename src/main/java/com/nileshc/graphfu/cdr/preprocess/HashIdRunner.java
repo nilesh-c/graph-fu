@@ -29,6 +29,10 @@ public class HashIdRunner {
 
     private static int linespermap = 6000000;
     private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
+    
+//    public HashIdRunner(int numMappers, int numReducers) {
+//        
+//    }
 
     public void run(String inputpath, String outputpath, String vidmap) throws IOException {
         Configuration configuration = new Configuration();
@@ -47,18 +51,15 @@ public class HashIdRunner {
             job.setMapperClass(HashIdMapper.class);
             job.setReducerClass(HashIdReducer.class);
             
-            job.setMapOutputKeyClass(HashIdCompositeKey.class);
-            job.setPartitionerClass(HashIdKeyPartitioner.class);
-            job.setGroupingComparatorClass(HashIdKeyGroupingComparator.class);
-            job.setSortComparatorClass(HashIdCompositeKeyComparator.class);
-            
             //set MultipleOutputs
             MultipleOutputs.addNamedOutput(job, vidmap, TextOutputFormat.class, LongWritable.class, Text.class);
             
-            job.setInputFormatClass(NLineInputFormat.class);
+            //job.setInputFormatClass(NLineInputFormat.class);
             
-            job.setOutputKeyClass(NullWritable.class);
-            job.setOutputValueClass(NullWritable.class);
+            job.setMapOutputKeyClass(LongWritable.class);
+            job.setMapOutputValueClass(Text.class);
+            job.setOutputKeyClass(LongWritable.class);
+            job.setOutputValueClass(Text.class);
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
         }

@@ -9,13 +9,16 @@ import java.util.StringTokenizer;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 
 /**
  *
  * @author nilesh
  */
-public class HashIdMapper extends Mapper<Text, Text, HashIdCompositeKey, Text> {
+public class HashIdMapper extends Mapper<LongWritable, Text, LongWritable, Text> {
 
     private static final Logger LOG = Logger.getLogger(HashIdMapper.class);
     private long currentID;
@@ -26,12 +29,10 @@ public class HashIdMapper extends Mapper<Text, Text, HashIdCompositeKey, Text> {
     }
 
     @Override
-    public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-        StringTokenizer tokenizer = new StringTokenizer(value.toString(), ",");
-        String id2 = tokenizer.nextToken();
-        context.write(new HashIdCompositeKey(currentID, key.toString()), key);
-        ++currentID;
-        context.write(new HashIdCompositeKey(currentID, key.toString()), new Text(id2));
+    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        String id1 = "", id2 = "";
+        id1 = value.toString();
+        context.write(new LongWritable(currentID), new Text(id1));
         ++currentID;
     }
 }

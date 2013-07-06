@@ -47,7 +47,6 @@ public class HashIdReducer extends Reducer<LongWritable, Text, LongWritable, Tex
         for (Text value : values) {
             long newId = baseid + splitsize * split;
             multipleOutputs.write(new LongWritable(newId), value, vidmap);
-            context.write(new LongWritable(newId), value);
             ++split;
         }
     }

@@ -37,6 +37,5 @@ public class UniqueExtractReducer extends Reducer<Text, NullWritable, Text, Null
         Configuration conf = context.getConfiguration();
         String vidmap = conf.get("vdata");
         multipleOutputs.write(key, NullWritable.get(), vidmap);
-        context.write(key, NullWritable.get());
     }
 }

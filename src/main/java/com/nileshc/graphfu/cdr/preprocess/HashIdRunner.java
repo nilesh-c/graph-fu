@@ -17,6 +17,7 @@ import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.LazyOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.log4j.Logger;
@@ -55,6 +56,8 @@ public class HashIdRunner {
             job.setMapOutputValueClass(Text.class);
             job.setOutputKeyClass(LongWritable.class);
             job.setOutputValueClass(Text.class);
+            
+            LazyOutputFormat.setOutputFormatClass(job, TextOutputFormat.class);
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
         }

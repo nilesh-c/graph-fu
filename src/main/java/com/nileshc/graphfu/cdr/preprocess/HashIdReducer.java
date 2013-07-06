@@ -24,11 +24,17 @@ import org.apache.log4j.SimpleLayout;
 public class HashIdReducer extends Reducer<LongWritable, Text, LongWritable, Text> {
 
     private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
-    protected MultipleOutputs multipleOutputs = null;
+    private MultipleOutputs multipleOutputs = null;
+    private String vidmap = "";
+    private long splitsize = 0;
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
+        super.setup(context);
         multipleOutputs = new MultipleOutputs<LongWritable, Text>(context);
+        Configuration conf = context.getConfiguration();
+        this.vidmap = conf.get("vidmap");
+        this.splitsize = Long.parseLong(conf.get("mapred.line.input.format.linespermap"));
     }
 
     @Override
@@ -38,9 +44,6 @@ public class HashIdReducer extends Reducer<LongWritable, Text, LongWritable, Tex
 
     @Override
     public void reduce(LongWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-        Configuration conf = context.getConfiguration();
-        String vidmap = conf.get("vidmap");
-        long splitsize = Long.parseLong(conf.get("mapred.line.input.format.linespermap"));
         long baseid = key.get();
         int split = 0;
         String temp = "";

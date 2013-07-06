@@ -24,7 +24,8 @@ public class HashIdMapper extends Mapper<LongWritable, Text, LongWritable, Text>
     private long currentID;
 
     @Override
-    public void setup(Context context) {
+    public void setup(Context context) throws IOException, InterruptedException {
+        super.setup(context);
         this.currentID = 0;
     }
 

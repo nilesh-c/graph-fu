@@ -7,8 +7,8 @@ package com.nileshc.graphfu.cdr.preprocess;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -22,14 +22,19 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class UniqueExtractRunner {
+public class PartitionDictRunner {
 
+    private static int linespermap = 6000000;
     private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
+    private int numChunks = 0;
 
-    public void run(String inputpath, String outputpath, String vdata) throws IOException {
+    public PartitionDictRunner(int numChunks) {
+        this.numChunks = numChunks;
+    }
+
+    public void run(String inputpath, String outputpath) throws IOException {
         Configuration configuration = new Configuration();
-        configuration.set("vdata", vdata);
-
+        configuration.setInt("numChunks", numChunks);
         Job job = null;
 
         try {
@@ -39,20 +44,20 @@ public class UniqueExtractRunner {
             FileInputFormat.addInputPath(job, new Path(inputpath));
             FileOutputFormat.setOutputPath(job, new Path(outputpath));
 
-            job.setMapperClass(UniqueExtractMapper.class);
-            job.setReducerClass(UniqueExtractReducer.class);
-
-            //set MultipleOutputs
-            MultipleOutputs.addNamedOutput(job, vdata, TextOutputFormat.class, Text.class, NullWritable.class);
+            job.setMapperClass(PartitionDictMapper.class);
+            job.setReducerClass(PartitionDictReducer.class);
 
             //job.setInputFormatClass(NLineInputFormat.class);
 
-            job.setMapOutputKeyClass(Text.class);
-            job.setMapOutputValueClass(NullWritable.class);
-            job.setOutputKeyClass(LongWritable.class);
-            job.setOutputValueClass(NullWritable.class);
+            job.setMapOutputKeyClass(IntWritable.class);
+            job.setMapOutputValueClass(Text.class);
+            job.setOutputKeyClass(Text.class);
+            job.setOutputValueClass(Text.class);
 
-            LazyOutputFormat.setOutputFormatClass(job, TextOutputFormat.class);
+            String outprefix = "vidhashmap";
+            for (int i = 0; i < numChunks; i++) {
+                MultipleOutputs.addNamedOutput(job, outprefix + i, TextOutputFormat.class, Text.class, Text.class);
+            }
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
         }
@@ -64,7 +69,7 @@ public class UniqueExtractRunner {
         }
 
         LOG.info("Finished");
-        LOG.info("====== Job: Extract the unique raw vertex IDs ==========");
+        LOG.info("====== Job: Partition the map of rawid -> id ==========");
         LOG.info("Input = " + inputpath);
         LOG.info("Output = " + outputpath);
         LOG.info("=======================Done ==============================\n");

@@ -6,6 +6,7 @@ package com.nileshc.graphfu.cdr.preprocess;
 
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -17,17 +18,16 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class UniqueExtractReducer extends Reducer<Text, NullWritable, Text, NullWritable> {
+public class PartitionDictReducer extends Reducer<IntWritable, Text, Text, Text> {
 
     private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
     private MultipleOutputs multipleOutputs = null;
-    private String vidmap = "";
 
     @Override
     protected void setup(Reducer.Context context) throws IOException, InterruptedException {
-        multipleOutputs = new MultipleOutputs<Text, NullWritable>(context);
+        super.setup(context);
+        multipleOutputs = new MultipleOutputs<NullWritable, Text>(context);
         Configuration conf = context.getConfiguration();
-        this.vidmap = conf.get("vdata");
     }
 
     @Override
@@ -36,7 +36,9 @@ public class UniqueExtractReducer extends Reducer<Text, NullWritable, Text, Null
     }
 
     @Override
-    public void reduce(Text key, Iterable<NullWritable> values, Context context) throws IOException, InterruptedException {
-        multipleOutputs.write(key, NullWritable.get(), vidmap);
+    public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+        for (Text value : values) {
+            multipleOutputs.write(NullWritable.get(), value, "vidhashmap" + key.get());
+        }
     }
 }

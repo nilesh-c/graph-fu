@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 public class HashIdRunner {
 
     private static int linespermap = 6000000;
-    private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
+    private static final Logger LOG = Logger.getLogger(HashIdRunner.class);
 
     public void run(String inputpath, String outputpath, String vidmap) throws IOException {
         Configuration configuration = new Configuration();

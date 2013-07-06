@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public class UniqueExtractReducer extends Reducer<Text, NullWritable, Text, NullWritable> {
 
-    private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
+    private static final Logger LOG = Logger.getLogger(UniqueExtractReducer.class);
     private MultipleOutputs multipleOutputs = null;
     private String vidmap = "";
 

@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
  */
 public class PartitionEdgeReducer extends Reducer<IntWritable, Text, NullWritable, Text> {
 
-    private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
+    private static final Logger LOG = Logger.getLogger(PartitionEdgeReducer.class);
 
     @Override
     public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {

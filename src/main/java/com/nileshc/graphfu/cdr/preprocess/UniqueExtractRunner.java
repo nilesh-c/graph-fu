@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 public class UniqueExtractRunner {
 
-    private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
+    private static final Logger LOG = Logger.getLogger(UniqueExtractRunner.class);
 
     public void run(String inputpath, String outputpath, String vdata) throws IOException {
         Configuration configuration = new Configuration();

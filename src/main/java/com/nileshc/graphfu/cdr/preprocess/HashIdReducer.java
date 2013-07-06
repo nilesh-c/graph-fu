@@ -23,7 +23,7 @@ import org.apache.log4j.SimpleLayout;
  */
 public class HashIdReducer extends Reducer<LongWritable, Text, LongWritable, Text> {
 
-    private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
+    private static final Logger LOG = Logger.getLogger(HashIdReducer.class);
     private MultipleOutputs multipleOutputs = null;
     private String vidmap = "";
     private long splitsize = 0;

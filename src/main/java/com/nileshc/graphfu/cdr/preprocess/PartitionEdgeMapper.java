@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  */
 public class PartitionEdgeMapper extends Mapper<LongWritable, Text, IntWritable, Text> {
 
-    private static final Logger LOG = Logger.getLogger(PartitionDictMapper.class);
+    private static final Logger LOG = Logger.getLogger(PartitionEdgeMapper.class);
     private int numChunks = 0;
 
     @Override

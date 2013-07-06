@@ -40,10 +40,33 @@ public class TranslateEdgeMapper extends Mapper<LongWritable, Text, IntWritable,
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         StringTokenizer tokenizer = new StringTokenizer(value.toString());
         String sourceId = tokenizer.nextToken();
-        int hash = sourceId.hashCode() % numChunks;
-        if (hash < 0) {
-            hash += numChunks;
+        String targetId = tokenizer.nextToken();
+        int part = sourceId.hashCode() % numChunks;
+        if (part < 0) {
+            part += numChunks;
         }
-        context.write(new IntWritable(hash), value);
+        if (part != dictionaryId) {
+            dictionaryId = part;
+            loadDictionary();
+        }
+
+        if (dict.containsKey(sourceId)) {
+            long newId = dict.get(sourceId);
+            int targetHash = targetId.hashCode() % numChunks;
+            if (targetHash < 0) {
+                targetHash += numChunks;
+            }
+            StringBuilder output = new StringBuilder();
+            output.append(newId).append(",").append(targetId).append(",");
+            while (tokenizer.hasMoreTokens()) {
+                output.append(tokenizer.nextToken()).append(",");
+            }
+            output.deleteCharAt(output.length() - 1);
+            context.write(new IntWritable(targetHash), new Text(output.toString()));
+        }
+    }
+
+    private void loadDictionary() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

@@ -23,13 +23,13 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class PartitionDictRunner {
+public class PartitionEdgeRunner {
 
     private static int linespermap = 6000000;
     private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
     private int numChunks = 0;
 
-    public PartitionDictRunner(int numChunks) {
+    public PartitionEdgeRunner(int numChunks) {
         this.numChunks = numChunks;
     }
 
@@ -45,8 +45,8 @@ public class PartitionDictRunner {
             FileInputFormat.addInputPath(job, new Path(inputpath));
             FileOutputFormat.setOutputPath(job, new Path(outputpath));
 
-            job.setMapperClass(PartitionDictMapper.class);
-            job.setReducerClass(PartitionDictReducer.class);
+            job.setMapperClass(PartitionEdgeMapper.class);
+            job.setReducerClass(PartitionEdgeReducer.class);
 
             //job.setInputFormatClass(NLineInputFormat.class);
 
@@ -59,7 +59,7 @@ public class PartitionDictRunner {
             for (int i = 0; i < numChunks; i++) {
                 MultipleOutputs.addNamedOutput(job, outprefix + i, TextOutputFormat.class, Text.class, Text.class);
             }
-            
+
             LazyOutputFormat.setOutputFormatClass(job, TextOutputFormat.class);
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
@@ -72,7 +72,7 @@ public class PartitionDictRunner {
         }
 
         LOG.info("Finished");
-        LOG.info("====== Job: Partition the map of rawid -> id ==========");
+        LOG.info("====== Job: Partition the input edges by hash(sourceid) ==========");
         LOG.info("Input = " + inputpath);
         LOG.info("Output = " + outputpath);
         LOG.debug("numChunks = " + numChunks);

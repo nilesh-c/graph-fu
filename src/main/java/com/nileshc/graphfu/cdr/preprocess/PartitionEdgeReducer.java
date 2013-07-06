@@ -18,27 +18,14 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class PartitionDictReducer extends Reducer<IntWritable, Text, NullWritable, Text> {
+public class PartitionEdgeReducer extends Reducer<IntWritable, Text, NullWritable, Text> {
 
     private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
-    private MultipleOutputs multipleOutputs = null;
-
-    @Override
-    protected void setup(Reducer.Context context) throws IOException, InterruptedException {
-        super.setup(context);
-        multipleOutputs = new MultipleOutputs<NullWritable, Text>(context);
-        Configuration conf = context.getConfiguration();
-    }
-
-    @Override
-    public void cleanup(Reducer.Context context) throws IOException, InterruptedException {
-        multipleOutputs.close();
-    }
 
     @Override
     public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
         for (Text value : values) {
-            multipleOutputs.write(NullWritable.get(), value, "vidhashmap" + key.get());
+            context.write(NullWritable.get(), value);
         }
     }
 }

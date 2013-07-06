@@ -24,7 +24,7 @@ public class UniqueExtractReducer extends Reducer<Text, NullWritable, Text, Null
 
     @Override
     protected void setup(Reducer.Context context) throws IOException, InterruptedException {
-        multipleOutputs = new MultipleOutputs(context);
+        multipleOutputs = new MultipleOutputs<Text, NullWritable>(context);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class HashIdReducer extends Reducer<LongWritable, Text, LongWritable, Tex
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        multipleOutputs = new MultipleOutputs(context);
+        multipleOutputs = new MultipleOutputs<LongWritable, Text>(context);
     }
 
     @Override

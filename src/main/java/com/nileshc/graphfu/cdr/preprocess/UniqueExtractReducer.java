@@ -24,14 +24,14 @@ public class UniqueExtractReducer extends Reducer<Text, NullWritable, Text, Null
     private String vidmap = "";
 
     @Override
-    protected void setup(Reducer.Context context) throws IOException, InterruptedException {
+    protected void setup(Context context) throws IOException, InterruptedException {
         multipleOutputs = new MultipleOutputs<Text, NullWritable>(context);
         Configuration conf = context.getConfiguration();
         this.vidmap = conf.get("vdata");
     }
 
     @Override
-    public void cleanup(Reducer.Context context) throws IOException, InterruptedException {
+    public void cleanup(Context context) throws IOException, InterruptedException {
         multipleOutputs.close();
     }
 

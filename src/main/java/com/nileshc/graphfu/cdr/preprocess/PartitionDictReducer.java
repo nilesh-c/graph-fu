@@ -24,14 +24,14 @@ public class PartitionDictReducer extends Reducer<IntWritable, Text, NullWritabl
     private MultipleOutputs multipleOutputs = null;
 
     @Override
-    protected void setup(Reducer.Context context) throws IOException, InterruptedException {
+    protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context);
         multipleOutputs = new MultipleOutputs<NullWritable, Text>(context);
         Configuration conf = context.getConfiguration();
     }
 
     @Override
-    public void cleanup(Reducer.Context context) throws IOException, InterruptedException {
+    public void cleanup(Context context) throws IOException, InterruptedException {
         multipleOutputs.close();
     }
 

@@ -23,10 +23,10 @@ public class Main {
         uer.run(input + "/edata", "/output", "vdata");
         
         HashIdRunner hir = new HashIdRunner();
-        hir.run(input + "/vdata", output, "vidmap");
+        hir.run(output + "/vdata-r-*", output + "/hashidoutput", "vidmap");
         
         PartitionDictRunner pdr = new PartitionDictRunner(64);
-        pdr.run(output + "/vidmap-r-*", output + "/temp/partitionedvidmap");
+        pdr.run(output + "/hashidoutput/vidmap-r-*", output + "/temp/partitionedvidmap");
         
         PartitionEdgeRunner per = new PartitionEdgeRunner(64);
         per.run(input + "/edata", output + "/temp/partitionededata");

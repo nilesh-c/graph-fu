@@ -40,7 +40,7 @@ public class PartitionEdgeRunner {
 
         try {
             job = new Job(configuration);
-            job.setJarByClass(HashIdRunner.class);
+            job.setJarByClass(PartitionEdgeRunner.class);
 
             FileInputFormat.addInputPath(job, new Path(inputpath));
             FileOutputFormat.setOutputPath(job, new Path(outputpath));

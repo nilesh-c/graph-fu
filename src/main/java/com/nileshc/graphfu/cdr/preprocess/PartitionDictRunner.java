@@ -40,7 +40,7 @@ public class PartitionDictRunner {
 
         try {
             job = new Job(configuration);
-            job.setJarByClass(HashIdRunner.class);
+            job.setJarByClass(PartitionDictRunner.class);
 
             FileInputFormat.addInputPath(job, new Path(inputpath));
             FileOutputFormat.setOutputPath(job, new Path(outputpath));

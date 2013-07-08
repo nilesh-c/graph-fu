@@ -3,6 +3,7 @@ package com.nileshc.graphfu;
 import com.nileshc.graphfu.cdr.preprocess.hashid.HashIdRunner;
 import com.nileshc.graphfu.cdr.preprocess.partitiondict.PartitionDictRunner;
 import com.nileshc.graphfu.cdr.preprocess.partitionedge.PartitionEdgeRunner;
+import com.nileshc.graphfu.cdr.preprocess.translateedge.TranslateEdgeRunner;
 import com.nileshc.graphfu.cdr.preprocess.uniqueextract.UniqueExtractRunner;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessReducer;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessRunner;
@@ -19,16 +20,19 @@ public class Main {
         String input = "/input";
         String output = "/output";
         
-        UniqueExtractRunner uer = new UniqueExtractRunner();
-        uer.run(input + "/edata", "/output", "vdata");
+//        UniqueExtractRunner uer = new UniqueExtractRunner();
+//        uer.run(input + "/edata", "/output", "vdata");
+//        
+//        HashIdRunner hir = new HashIdRunner();
+//        hir.run(output + "/vdata-r-*", output + "/hashidoutput", "vidmap");
+//        
+//        PartitionDictRunner pdr = new PartitionDictRunner(64);
+//        pdr.run(output + "/hashidoutput/vidmap-r-*", output + "/temp/partitionedvidmap");
+//        
+//        PartitionEdgeRunner per = new PartitionEdgeRunner(64);
+//        per.run(input + "/edata", output + "/temp/partitionededata");
         
-        HashIdRunner hir = new HashIdRunner();
-        hir.run(output + "/vdata-r-*", output + "/hashidoutput", "vidmap");
-        
-        PartitionDictRunner pdr = new PartitionDictRunner(64);
-        pdr.run(output + "/hashidoutput/vidmap-r-*", output + "/temp/partitionedvidmap");
-        
-        PartitionEdgeRunner per = new PartitionEdgeRunner(64);
-        per.run(input + "/edata", output + "/temp/partitionededata");
+        TranslateEdgeRunner ter = new TranslateEdgeRunner(64, output + "/temp/partitionedvidmap/");
+        ter.run(output + "/temp/partitionededata", output + "/edata");
     }
 }

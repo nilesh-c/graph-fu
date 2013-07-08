@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nileshc.graphfu.cdr.preprocess;
+package com.nileshc.graphfu.cdr.preprocess.hashid;
 
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;

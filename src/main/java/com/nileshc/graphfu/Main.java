@@ -1,9 +1,9 @@
 package com.nileshc.graphfu;
 
-import com.nileshc.graphfu.cdr.preprocess.HashIdRunner;
-import com.nileshc.graphfu.cdr.preprocess.PartitionDictRunner;
-import com.nileshc.graphfu.cdr.preprocess.PartitionEdgeRunner;
-import com.nileshc.graphfu.cdr.preprocess.UniqueExtractRunner;
+import com.nileshc.graphfu.cdr.preprocess.hashid.HashIdRunner;
+import com.nileshc.graphfu.cdr.preprocess.partitiondict.PartitionDictRunner;
+import com.nileshc.graphfu.cdr.preprocess.partitionedge.PartitionEdgeRunner;
+import com.nileshc.graphfu.cdr.preprocess.uniqueextract.UniqueExtractRunner;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessReducer;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessRunner;
 import java.io.IOException;

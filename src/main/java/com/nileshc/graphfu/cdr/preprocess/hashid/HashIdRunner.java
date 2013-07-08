@@ -2,17 +2,20 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nileshc.graphfu.cdr.preprocess;
+package com.nileshc.graphfu.cdr.preprocess.hashid;
 
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
+import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.LazyOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
@@ -23,43 +26,37 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class PartitionEdgeRunner {
+public class HashIdRunner {
 
     private static int linespermap = 6000000;
-    private static final Logger LOG = Logger.getLogger(PartitionEdgeRunner.class);
-    private int numChunks = 0;
+    private static final Logger LOG = Logger.getLogger(HashIdRunner.class);
 
-    public PartitionEdgeRunner(int numChunks) {
-        this.numChunks = numChunks;
-    }
-
-    public void run(String inputpath, String outputpath) throws IOException {
+    public void run(String inputpath, String outputpath, String vidmap) throws IOException {
         Configuration configuration = new Configuration();
-        configuration.setInt("numChunks", numChunks);
+        configuration.set("vidmap", vidmap);
+        
         Job job = null;
-
+        
         try {
             job = new Job(configuration);
-            job.setJarByClass(PartitionEdgeRunner.class);
-
+            job.setJarByClass(HashIdRunner.class);
+            
             FileInputFormat.addInputPath(job, new Path(inputpath));
             FileOutputFormat.setOutputPath(job, new Path(outputpath));
 
-            job.setMapperClass(PartitionEdgeMapper.class);
-            job.setReducerClass(PartitionEdgeReducer.class);
-
+            job.setMapperClass(HashIdMapper.class);
+            job.setReducerClass(HashIdReducer.class);
+            
+            //set MultipleOutputs
+            MultipleOutputs.addNamedOutput(job, vidmap, TextOutputFormat.class, LongWritable.class, Text.class);
+            
             //job.setInputFormatClass(NLineInputFormat.class);
-
-            job.setMapOutputKeyClass(IntWritable.class);
+            
+            job.setMapOutputKeyClass(LongWritable.class);
             job.setMapOutputValueClass(Text.class);
-            job.setOutputKeyClass(NullWritable.class);
+            job.setOutputKeyClass(LongWritable.class);
             job.setOutputValueClass(Text.class);
-
-            String outprefix = "vidhashmap";
-            for (int i = 0; i < numChunks; i++) {
-                MultipleOutputs.addNamedOutput(job, outprefix + i, TextOutputFormat.class, Text.class, Text.class);
-            }
-
+            
             LazyOutputFormat.setOutputFormatClass(job, TextOutputFormat.class);
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
@@ -72,10 +69,10 @@ public class PartitionEdgeRunner {
         }
 
         LOG.info("Finished");
-        LOG.info("====== Job: Partition the input edges by hash(sourceid) ==========");
+        LOG.info("====== Job: Create integer Id maps for vertices ==========");
         LOG.info("Input = " + inputpath);
         LOG.info("Output = " + outputpath);
-        LOG.debug("numChunks = " + numChunks);
+        LOG.debug("Lines per map = " + linespermap);
         LOG.info("=======================Done ==============================\n");
     }
 }

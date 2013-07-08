@@ -2,12 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nileshc.graphfu.cdr.preprocess;
+package com.nileshc.graphfu.cdr.preprocess.partitiondict;
 
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -22,39 +23,44 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class TranslateEdgeRunner {
+public class PartitionDictRunner {
 
-    private static final Logger LOG = Logger.getLogger(TranslateEdgeRunner.class);
-    private int numChunks;
-    private String dictionaryPath;
+    private static int linespermap = 6000000;
+    private static final Logger LOG = Logger.getLogger(PartitionDictRunner.class);
+    private int numChunks = 0;
 
-    public TranslateEdgeRunner(int numChunks, String dictionaryPath) {
+    public PartitionDictRunner(int numChunks) {
         this.numChunks = numChunks;
-        this.dictionaryPath = dictionaryPath;
     }
 
     public void run(String inputpath, String outputpath) throws IOException {
         Configuration configuration = new Configuration();
         configuration.setInt("numChunks", numChunks);
-        configuration.set("dictionaryPath", dictionaryPath);
         Job job = null;
 
         try {
             job = new Job(configuration);
-            job.setJarByClass(TranslateEdgeRunner.class);
+            job.setJarByClass(PartitionDictRunner.class);
 
             FileInputFormat.addInputPath(job, new Path(inputpath));
             FileOutputFormat.setOutputPath(job, new Path(outputpath));
 
-            job.setMapperClass(TranslateEdgeMapper.class);
-            job.setReducerClass(TranslateEdgeReducer.class);
+            job.setMapperClass(PartitionDictMapper.class);
+            job.setReducerClass(PartitionDictReducer.class);
 
             //job.setInputFormatClass(NLineInputFormat.class);
 
             job.setMapOutputKeyClass(IntWritable.class);
             job.setMapOutputValueClass(Text.class);
-            job.setOutputKeyClass(Text.class);
+            job.setOutputKeyClass(NullWritable.class);
             job.setOutputValueClass(Text.class);
+
+            String outprefix = "vidhashmap";
+            for (int i = 0; i < numChunks; i++) {
+                MultipleOutputs.addNamedOutput(job, outprefix + i, TextOutputFormat.class, Text.class, Text.class);
+            }
+            
+            LazyOutputFormat.setOutputFormatClass(job, TextOutputFormat.class);
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
         }
@@ -66,7 +72,7 @@ public class TranslateEdgeRunner {
         }
 
         LOG.info("Finished");
-        LOG.info("====== Job: Partition the input edges by hash(sourceid) ==========");
+        LOG.info("====== Job: Partition the map of rawid -> id ==========");
         LOG.info("Input = " + inputpath);
         LOG.info("Output = " + outputpath);
         LOG.debug("numChunks = " + numChunks);

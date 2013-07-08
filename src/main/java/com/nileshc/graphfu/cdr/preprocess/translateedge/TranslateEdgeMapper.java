@@ -43,12 +43,12 @@ public class TranslateEdgeMapper extends Mapper<LongWritable, Text, IntWritable,
         this.dictionaryPath = conf.get("dictionaryPath");
         this.dict = new HashMap<String, Long>();
         this.dictionaryId = -1;
-        
+        fs = FileSystem.get(conf);
     }
 
     @Override
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-        StringTokenizer tokenizer = new StringTokenizer(value.toString());
+        StringTokenizer tokenizer = new StringTokenizer(value.toString(), ",");
         String sourceId = tokenizer.nextToken();
         String targetId = tokenizer.nextToken();
         int part = sourceId.hashCode() % numChunks;

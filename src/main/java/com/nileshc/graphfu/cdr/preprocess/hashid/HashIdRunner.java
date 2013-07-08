@@ -34,29 +34,30 @@ public class HashIdRunner {
     public void run(String inputpath, String outputpath, String vidmap) throws IOException {
         Configuration configuration = new Configuration();
         configuration.set("vidmap", vidmap);
-        
+
         Job job = null;
-        
+
         try {
             job = new Job(configuration);
             job.setJarByClass(HashIdRunner.class);
-            
+            job.setNumReduceTasks(1);
+
             FileInputFormat.addInputPath(job, new Path(inputpath));
             FileOutputFormat.setOutputPath(job, new Path(outputpath));
 
             job.setMapperClass(HashIdMapper.class);
             job.setReducerClass(HashIdReducer.class);
-            
+
             //set MultipleOutputs
             MultipleOutputs.addNamedOutput(job, vidmap, TextOutputFormat.class, LongWritable.class, Text.class);
-            
+
             //job.setInputFormatClass(NLineInputFormat.class);
-            
-            job.setMapOutputKeyClass(LongWritable.class);
-            job.setMapOutputValueClass(Text.class);
+
+            job.setMapOutputKeyClass(Text.class);
+            job.setMapOutputValueClass(NullWritable.class);
             job.setOutputKeyClass(LongWritable.class);
             job.setOutputValueClass(Text.class);
-            
+
             LazyOutputFormat.setOutputFormatClass(job, TextOutputFormat.class);
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);

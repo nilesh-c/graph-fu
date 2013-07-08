@@ -56,13 +56,13 @@ public class TranslateEdgeReducer extends Reducer<IntWritable, Text, NullWritabl
             loadDictionary();
         }
         for (Text value : values) {
-            StringTokenizer tokenizer = new StringTokenizer(value.toString());
+            StringTokenizer tokenizer = new StringTokenizer(value.toString(), ",");
             String sourceId = tokenizer.nextToken();
             String targetId = tokenizer.nextToken();
             if (dict.containsKey(targetId)) {
                 long newTargetId = dict.get(targetId);
                 StringBuilder output = new StringBuilder(); // Feed in the edge data
-                output.append(newTargetId).append(",").append(targetId).append(",");
+                output.append(newTargetId).append(",");
                 while (tokenizer.hasMoreTokens()) {
                     output.append(tokenizer.nextToken()).append(",");
                 }

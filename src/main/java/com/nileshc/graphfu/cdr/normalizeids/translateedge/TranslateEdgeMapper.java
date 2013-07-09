@@ -2,10 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nileshc.graphfu.cdr.preprocess.translateedge;
+package com.nileshc.graphfu.cdr.normalizeids.translateedge;
 
-import com.nileshc.graphfu.cdr.preprocess.partitionedge.PartitionEdgeMapper;
-import com.nileshc.graphfu.cdr.preprocess.partitionedge.PartitionEdgeReducer;
+import com.nileshc.graphfu.cdr.normalizeids.partitionedge.PartitionEdgeMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,19 +18,17 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author nilesh
  */
-public class TranslateEdgeReducer extends Reducer<IntWritable, Text, NullWritable, Text> {
+public class TranslateEdgeMapper extends Mapper<LongWritable, Text, IntWritable, Text> {
 
-    private static final Logger LOG = Logger.getLogger(TranslateEdgeReducer.class);
+    private static final Logger LOG = Logger.getLogger(TranslateEdgeMapper.class);
     private int numChunks = 0;
     private String dictionaryPath;
     private int dictionaryId;
@@ -50,25 +47,32 @@ public class TranslateEdgeReducer extends Reducer<IntWritable, Text, NullWritabl
     }
 
     @Override
-    public void reduce(IntWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-        if (key.get() != dictionaryId) {
-            dictionaryId = key.get();
+    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        StringTokenizer tokenizer = new StringTokenizer(value.toString(), ",");
+        String sourceId = tokenizer.nextToken();
+        String targetId = tokenizer.nextToken();
+        int part = sourceId.hashCode() % numChunks;
+        if (part < 0) {
+            part += numChunks;
+        }
+        if (part != dictionaryId) {
+            dictionaryId = part;
             loadDictionary();
         }
-        for (Text value : values) {
-            StringTokenizer tokenizer = new StringTokenizer(value.toString(), ",");
-            String sourceId = tokenizer.nextToken();
-            String targetId = tokenizer.nextToken();
-            if (dict.containsKey(targetId)) {
-                long newTargetId = dict.get(targetId);
-                StringBuilder output = new StringBuilder(); // Feed in the edge data
-                output.append(newTargetId).append(",");
-                while (tokenizer.hasMoreTokens()) {
-                    output.append(tokenizer.nextToken()).append(",");
-                }
-                output.deleteCharAt(output.length() - 1);
-                context.write(NullWritable.get(), new Text(sourceId + "," + output.toString()));
+
+        if (dict.containsKey(sourceId)) {
+            long newId = dict.get(sourceId);
+            int targetHash = targetId.hashCode() % numChunks;
+            if (targetHash < 0) {
+                targetHash += numChunks;
             }
+            StringBuilder output = new StringBuilder(); // Feed in the edge data
+            output.append(newId).append(",").append(targetId).append(",");
+            while (tokenizer.hasMoreTokens()) {
+                output.append(tokenizer.nextToken()).append(",");
+            }
+            output.deleteCharAt(output.length() - 1);
+            context.write(new IntWritable(targetHash), new Text(output.toString()));
         }
     }
 

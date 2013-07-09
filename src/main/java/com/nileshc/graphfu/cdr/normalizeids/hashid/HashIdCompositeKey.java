@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nileshc.graphfu.cdr.preprocess.hashid;
+package com.nileshc.graphfu.cdr.normalizeids.hashid;
 
 import java.io.DataInput;
 import java.io.DataOutput;

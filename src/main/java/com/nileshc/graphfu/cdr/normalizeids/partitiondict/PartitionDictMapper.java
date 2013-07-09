@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nileshc.graphfu.cdr.preprocess.partitionedge;
+package com.nileshc.graphfu.cdr.normalizeids.partitiondict;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -19,9 +19,9 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class PartitionEdgeMapper extends Mapper<LongWritable, Text, IntWritable, Text> {
+public class PartitionDictMapper extends Mapper<LongWritable, Text, IntWritable, Text> {
 
-    private static final Logger LOG = Logger.getLogger(PartitionEdgeMapper.class);
+    private static final Logger LOG = Logger.getLogger(PartitionDictMapper.class);
     private int numChunks = 0;
 
     @Override
@@ -34,8 +34,9 @@ public class PartitionEdgeMapper extends Mapper<LongWritable, Text, IntWritable,
     @Override
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         StringTokenizer tokenizer = new StringTokenizer(value.toString());
-        String sourceId = tokenizer.nextToken();
-        int hash = sourceId.hashCode() % numChunks;
+        String newId = tokenizer.nextToken();
+        String rawId = tokenizer.nextToken();
+        int hash = rawId.hashCode() % numChunks;
         if (hash < 0) {
             hash += numChunks;
         }

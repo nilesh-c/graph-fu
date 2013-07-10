@@ -4,13 +4,10 @@
  */
 package com.nileshc.graphfu.matrix.mvmult.preprocess;
 
-import com.nileshc.graphfu.cdr.normalizeids.hashid.HashIdMapper;
+import com.nileshc.graphfu.matrix.io.MatrixElement;
 import java.io.IOException;
-import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.log4j.Logger;
 
@@ -18,17 +15,17 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class PreprocessMapper extends Mapper<LongWritable, Text, Text, NullWritable> {
+public class PreprocessMapper extends Mapper<LongWritable, MatrixElement, LongWritable, MatrixElement> {
 
-    private static final Logger LOG = Logger.getLogger(HashIdMapper.class);
+    private static final Logger LOG = Logger.getLogger(PreprocessMapper.class);
 
     @Override
-    public void map(LongWritable key, Text value, Mapper.Context context) throws IOException, InterruptedException {
+    public void map(LongWritable key, MatrixElement value, Context context) throws IOException, InterruptedException {
         StringTokenizer tokenizer = new StringTokenizer(value.toString(), ",");
-        try {
-            context.write(new Text(tokenizer.nextToken()), NullWritable.get());
-            context.write(new Text(tokenizer.nextToken()), NullWritable.get());
-        } catch (NoSuchElementException nsee) {
+        if (value.isVector()) {
+            context.write(value.getColumn(), value);
+        } else {
+            context.write(value.getRow(), value);
         }
     }
 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nileshc.graphfu.matrix;
+package com.nileshc.graphfu.matrix.io;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -18,10 +18,10 @@ import org.apache.hadoop.io.Writable;
  */
 public class MatrixElement implements Writable {
 
-    private LongWritable row;
-    private LongWritable column;
-    private DoubleWritable value;
-    private BooleanWritable isVector;
+    private LongWritable row = null;
+    private LongWritable column = null;
+    private DoubleWritable value = null;
+    private BooleanWritable isVector = null;
 
     public MatrixElement() {
         this.row = null;
@@ -42,6 +42,29 @@ public class MatrixElement implements Writable {
         this.column = null;
         this.value = value;
         this.isVector = new BooleanWritable(true);
+    }
+
+    public MatrixElement(DoubleWritable value) {
+        this.value = value;
+        this.isVector = new BooleanWritable(false);
+    }
+
+    public void setVectorData(LongWritable row, DoubleWritable value) {
+        this.row = row;
+        this.value = value;
+        this.isVector = new BooleanWritable(true);
+    }
+
+    public void setMatrixData(LongWritable row, LongWritable column, DoubleWritable value) {
+        this.row = row;
+        this.column = column;
+        this.value = value;
+        this.isVector = new BooleanWritable(false);
+    }
+
+    public void setValue(DoubleWritable value) {
+        this.value = value;
+        this.isVector = new BooleanWritable(false);
     }
 
     public void write(DataOutput d) throws IOException {
@@ -69,5 +92,21 @@ public class MatrixElement implements Writable {
         column.readFields(di);
         value.readFields(di);
         isVector.readFields(di);
+    }
+
+    public boolean isVector() {
+        return isVector.get();
+    }
+    
+    public LongWritable getColumn() {
+        return column;
+    }
+
+    public LongWritable getRow() {
+        return row;
+    }
+
+    public DoubleWritable getValue() {
+        return value;
     }
 }

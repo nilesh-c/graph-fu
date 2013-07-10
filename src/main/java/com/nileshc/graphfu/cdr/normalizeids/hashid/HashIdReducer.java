@@ -25,12 +25,13 @@ public class HashIdReducer extends Reducer<Text, NullWritable, LongWritable, Tex
 
     private static final Logger LOG = Logger.getLogger(HashIdReducer.class);
     private MultipleOutputs multipleOutputs = null;
+    private LongWritable countLong = new LongWritable(1);
     private String vidmap = "";
     private long splitsize = 0;
     private long count = 0;
 
     @Override
-    protected void setup(Reducer.Context context) throws IOException, InterruptedException {
+    protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context);
         multipleOutputs = new MultipleOutputs<LongWritable, Text>(context);
         Configuration conf = context.getConfiguration();
@@ -39,13 +40,14 @@ public class HashIdReducer extends Reducer<Text, NullWritable, LongWritable, Tex
     }
 
     @Override
-    public void cleanup(Reducer.Context context) throws IOException, InterruptedException {
+    public void cleanup(Context context) throws IOException, InterruptedException {
         multipleOutputs.close();
     }
 
     @Override
     public void reduce(Text key, Iterable<NullWritable> values, Context context) throws IOException, InterruptedException {
-        multipleOutputs.write(new LongWritable(count), key.toString(), vidmap);
+        countLong.set(count);
+        multipleOutputs.write(countLong, key.toString(), vidmap);
         ++count;
     }
 }

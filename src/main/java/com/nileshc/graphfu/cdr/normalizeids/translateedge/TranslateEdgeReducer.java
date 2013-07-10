@@ -4,8 +4,6 @@
  */
 package com.nileshc.graphfu.cdr.normalizeids.translateedge;
 
-import com.nileshc.graphfu.cdr.normalizeids.partitionedge.PartitionEdgeMapper;
-import com.nileshc.graphfu.cdr.normalizeids.partitionedge.PartitionEdgeReducer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,10 +16,8 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.log4j.Logger;
 
@@ -37,6 +33,7 @@ public class TranslateEdgeReducer extends Reducer<IntWritable, Text, NullWritabl
     private int dictionaryId;
     private HashMap<String, Long> dict;
     private FileSystem fs;
+    private Text edgeOutput = new Text();
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
@@ -67,7 +64,8 @@ public class TranslateEdgeReducer extends Reducer<IntWritable, Text, NullWritabl
                     output.append(tokenizer.nextToken()).append(",");
                 }
                 output.deleteCharAt(output.length() - 1);
-                context.write(NullWritable.get(), new Text(sourceId + "," + output.toString()));
+                edgeOutput.set(sourceId + "," + output.toString());
+                context.write(NullWritable.get(), edgeOutput);
             }
         }
     }

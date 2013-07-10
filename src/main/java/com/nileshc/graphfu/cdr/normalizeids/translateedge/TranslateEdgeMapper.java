@@ -4,7 +4,6 @@
  */
 package com.nileshc.graphfu.cdr.normalizeids.translateedge;
 
-import com.nileshc.graphfu.cdr.normalizeids.partitionedge.PartitionEdgeMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,6 +33,8 @@ public class TranslateEdgeMapper extends Mapper<LongWritable, Text, IntWritable,
     private int dictionaryId;
     private HashMap<String, Long> dict;
     private FileSystem fs;
+    private IntWritable hashInt = new IntWritable(1);
+    private Text edgeOutput = new Text();
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
@@ -72,7 +73,9 @@ public class TranslateEdgeMapper extends Mapper<LongWritable, Text, IntWritable,
                 output.append(tokenizer.nextToken()).append(",");
             }
             output.deleteCharAt(output.length() - 1);
-            context.write(new IntWritable(targetHash), new Text(output.toString()));
+            hashInt.set(targetHash);
+            edgeOutput.set(output.toString());
+            context.write(hashInt, edgeOutput);
         }
     }
 

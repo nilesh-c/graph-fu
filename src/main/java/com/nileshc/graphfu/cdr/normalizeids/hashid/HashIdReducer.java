@@ -6,16 +6,12 @@ package com.nileshc.graphfu.cdr.normalizeids.hashid;
 
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 
 /**
  *
@@ -28,7 +24,7 @@ public class HashIdReducer extends Reducer<Text, NullWritable, LongWritable, Tex
     private LongWritable countLong = new LongWritable(1);
     private String vidmap = "";
     private long splitsize = 0;
-    private long count = 0;
+    private long totalVertexCount = 0;
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
@@ -46,8 +42,8 @@ public class HashIdReducer extends Reducer<Text, NullWritable, LongWritable, Tex
 
     @Override
     public void reduce(Text key, Iterable<NullWritable> values, Context context) throws IOException, InterruptedException {
-        countLong.set(count);
+        countLong.set(totalVertexCount);
         multipleOutputs.write(countLong, key.toString(), vidmap);
-        ++count;
+        ++totalVertexCount;
     }
 }

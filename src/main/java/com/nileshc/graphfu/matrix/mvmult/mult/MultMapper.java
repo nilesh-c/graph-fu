@@ -8,7 +8,6 @@ import com.nileshc.graphfu.matrix.io.MatrixElement;
 import com.nileshc.graphfu.matrix.io.MultRowIntermediate;
 import com.nileshc.graphfu.matrix.io.MultiValueWritable;
 import java.io.IOException;
-import java.util.StringTokenizer;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -25,7 +24,6 @@ public class MultMapper extends Mapper<LongWritable, MultRowIntermediate, LongWr
 
     @Override
     public void map(LongWritable key, MultRowIntermediate value, Context context) throws IOException, InterruptedException {
-        StringTokenizer tokenizer = new StringTokenizer(value.toString(), ",");
         double vectorValue = value.getVectorValue().get();
         if (vectorValue != 0) {
             for (MatrixElement element : value.getMatrixElements()) {
@@ -33,6 +31,6 @@ public class MultMapper extends Mapper<LongWritable, MultRowIntermediate, LongWr
                 context.write(element.getRow(), new MultiValueWritable(productValue));
             }
         }
-        context.write(value.getVectorRow(), new MultiValueWritable(value));
+        context.write(value.getVectorRow(), new MultiValueWritable(value.getMatrixElements()));
     }
 }

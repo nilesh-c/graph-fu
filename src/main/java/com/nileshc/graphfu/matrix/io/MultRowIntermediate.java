@@ -64,13 +64,13 @@ public class MultRowIntermediate implements Writable {
     }
 
     public void readFields(DataInput di) throws IOException {
-        if (vectorRow != null) {
+        if (vectorRow == null) {
             vectorRow = new LongWritable();
         }
-        if (vectorValue != null) {
+        if (vectorValue == null) {
             vectorValue = new DoubleWritable();
         }
-        if (matrixElements != null) {
+        if (matrixElements == null) {
             matrixElements = new MatrixElementListWritable();
         }
 
@@ -81,6 +81,6 @@ public class MultRowIntermediate implements Writable {
 
     @Override
     public String toString() {
-        return "vectorRow:" + vectorRow + "\nvectorValue:" + vectorValue + "\nmatrixElements:\n" + matrixElements;
+        return "MultRowIntermediate vectorRow:" + vectorRow + " vectorValue:" + vectorValue + "\nmatrixElements:\n" + matrixElements;
     }
 }

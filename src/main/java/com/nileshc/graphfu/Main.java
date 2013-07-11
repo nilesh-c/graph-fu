@@ -4,6 +4,7 @@ import com.nileshc.graphfu.cdr.normalizeids.hashid.HashIdRunner;
 import com.nileshc.graphfu.cdr.normalizeids.partitiondict.PartitionDictRunner;
 import com.nileshc.graphfu.cdr.normalizeids.partitionedge.PartitionEdgeRunner;
 import com.nileshc.graphfu.cdr.normalizeids.translateedge.TranslateEdgeRunner;
+import com.nileshc.graphfu.matrix.mvmult.mult.MultRunner;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessReducer;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessRunner;
 import java.io.IOException;
@@ -30,8 +31,11 @@ public class Main {
 //
 //        TranslateEdgeRunner ter = new TranslateEdgeRunner(64, output + "/temp/partitionedvidmap/");
 //        ter.run(output + "/temp/partitionededata", output + "/edata");
-        
-        PreprocessRunner pr = new PreprocessRunner();
-        pr.run(input + "/matrix", input + "/vector", output);
+
+//        PreprocessRunner pr = new PreprocessRunner();
+//        pr.run(input + "/matrix", input + "/vector", output);
+
+        MultRunner mr = new MultRunner();
+        mr.run(output + "/part-r-*", output + "/final");
     }
 }

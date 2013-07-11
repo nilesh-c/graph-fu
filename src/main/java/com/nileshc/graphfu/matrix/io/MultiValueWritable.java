@@ -15,7 +15,7 @@ import org.apache.hadoop.io.Writable;
 public class MultiValueWritable extends GenericWritable {
 
     private static Class[] CLASSES = {
-        MultRowIntermediate.class,
+        MatrixElementListWritable.class,
         DoubleWritable.class
     };
 

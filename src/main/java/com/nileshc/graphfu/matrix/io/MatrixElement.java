@@ -103,6 +103,6 @@ public class MatrixElement implements Writable {
 
     @Override
     public String toString() {
-        return "Row:" + row + "\nColumn:" + column + "\nValue:" + value;
+        return "MatrixElement Row:" + row + " Column:" + column + " Value:" + value + " isVector:" + isVector.get();
     }
 }

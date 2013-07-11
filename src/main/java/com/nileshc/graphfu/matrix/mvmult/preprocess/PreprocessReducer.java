@@ -4,19 +4,15 @@
  */
 package com.nileshc.graphfu.matrix.mvmult.preprocess;
 
-import com.nileshc.graphfu.cdr.normalizeids.hashid.HashIdReducer;
 import com.nileshc.graphfu.matrix.io.MatrixElement;
 import com.nileshc.graphfu.matrix.io.MatrixElementListWritable;
 import com.nileshc.graphfu.matrix.io.MultRowIntermediate;
 import java.io.IOException;
-import org.apache.hadoop.conf.Configuration;
+import java.util.Iterator;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
-import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 
 /**
  *
@@ -26,29 +22,23 @@ public class PreprocessReducer extends Reducer<LongWritable, MatrixElement, Long
 
     private static final Logger LOG = Logger.getLogger(PreprocessReducer.class);
     private MultRowIntermediate outputValue = new MultRowIntermediate();
-
-    @Override
-    protected void setup(Context context) throws IOException, InterruptedException {
-        super.setup(context);
-        LOG.addAppender(new ConsoleAppender(new SimpleLayout(), "System.err"));
-    }
+    private MatrixElementListWritable list = new MatrixElementListWritable();
 
     @Override
     public void reduce(LongWritable key, Iterable<MatrixElement> values, Context context) throws IOException, InterruptedException {
-        outputValue.setMatrixElements(new MatrixElementListWritable());
-        for (MatrixElement element : values) {
-            LOG.info(element);
-            if (element.isVector()) {
-                outputValue.setVectorValue(element.getValue());
+        list.clear();
+        for (Iterator<MatrixElement> it = values.iterator(); it.hasNext();) {
+            MatrixElement element = it.next();
+            if (element.isVector() == true) {
+                outputValue.setVectorValue(new DoubleWritable(element.getValue().get()));
             } else {
-                outputValue.getMatrixElements().add(element);
+                list.add(new MatrixElement(new LongWritable(element.getRow().get()),
+                        new LongWritable(element.getColumn().get()),
+                        new DoubleWritable(element.getValue().get())));
             }
         }
         outputValue.setVectorRow(key);
-        if (outputValue.getVectorValue() == null) {
-            outputValue.setVectorValue(new DoubleWritable(0));
-        }
-        LOG.info(outputValue);
+        outputValue.setMatrixElements(list);
         context.write(key, outputValue);
     }
 }

@@ -25,7 +25,7 @@ public class PreprocessRunner {
 
     private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
 
-    public void run(String inputpath, String outputpath) throws IOException {
+    public void run(String matrixInputPath, String vectorInputPath, String outputpath) throws IOException {
         Configuration configuration = new Configuration();
         Job job = null;
 
@@ -33,7 +33,8 @@ public class PreprocessRunner {
             job = new Job(configuration);
             job.setJarByClass(PreprocessRunner.class);
 
-            FileInputFormat.addInputPath(job, new Path(inputpath));
+            FileInputFormat.addInputPath(job, new Path(vectorInputPath));
+            FileInputFormat.addInputPath(job, new Path(matrixInputPath));
             FileOutputFormat.setOutputPath(job, new Path(outputpath));
 
             job.setMapperClass(PreprocessMapper.class);
@@ -58,7 +59,8 @@ public class PreprocessRunner {
 
         LOG.info("Finished");
         LOG.info("====== Job: Stage 1 of matrix-vector multiplication ==========");
-        LOG.info("Input = " + inputpath);
+        LOG.info("Matrix Input = " + matrixInputPath);
+        LOG.info("Vector Input = " + vectorInputPath);
         LOG.info("Output = " + outputpath);
         LOG.info("=======================Done ==============================\n");
     }

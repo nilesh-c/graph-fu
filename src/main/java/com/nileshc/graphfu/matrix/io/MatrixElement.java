@@ -39,18 +39,14 @@ public class MatrixElement implements Writable {
 
     public MatrixElement(LongWritable row, DoubleWritable value) {
         this.row = row;
-        this.column = null;
+        this.column = new LongWritable(0);
         this.value = value;
         this.isVector = new BooleanWritable(true);
     }
 
-    public MatrixElement(DoubleWritable value) {
-        this.value = value;
-        this.isVector = new BooleanWritable(false);
-    }
-
     public void setVectorData(LongWritable row, DoubleWritable value) {
         this.row = row;
+        this.column = new LongWritable(0);
         this.value = value;
         this.isVector = new BooleanWritable(true);
     }
@@ -58,11 +54,6 @@ public class MatrixElement implements Writable {
     public void setMatrixData(LongWritable row, LongWritable column, DoubleWritable value) {
         this.row = row;
         this.column = column;
-        this.value = value;
-        this.isVector = new BooleanWritable(false);
-    }
-
-    public void setValue(DoubleWritable value) {
         this.value = value;
         this.isVector = new BooleanWritable(false);
     }
@@ -75,16 +66,16 @@ public class MatrixElement implements Writable {
     }
 
     public void readFields(DataInput di) throws IOException {
-        if (row != null) {
+        if (row == null) {
             row = new LongWritable();
         }
-        if (column != null) {
+        if (column == null) {
             column = new LongWritable();
         }
-        if (value != null) {
+        if (value == null) {
             value = new DoubleWritable();
         }
-        if (isVector != null) {
+        if (isVector == null) {
             isVector = new BooleanWritable();
         }
 
@@ -108,5 +99,10 @@ public class MatrixElement implements Writable {
 
     public DoubleWritable getValue() {
         return value;
+    }
+
+    @Override
+    public String toString() {
+        return "Row:" + row + "\nColumn:" + column + "\nValue:" + value;
     }
 }

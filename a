@@ -1,0 +1,71 @@
+INFO - Row:0
+Column:3
+Value:2.0
+INFO - Row:0
+Column:0
+Value:6.0
+INFO - Row:1
+Column:0
+Value:2.0
+INFO - Row:3
+Column:0
+Value:6.0
+INFO - Row:4
+Column:0
+Value:3.0
+INFO - Row:5
+Column:0
+Value:4.0
+INFO - Row:6
+Column:0
+Value:4.0
+INFO - Row:7
+Column:0
+Value:1.0
+INFO - vectorRow:0
+vectorValue:1.0
+matrixElements:
+Row:7
+Column:0
+Value:1.0
+
+INFO - Row:4
+Column:0
+Value:1.0
+INFO - vectorRow:4
+vectorValue:1.0
+matrixElements:
+Row:4
+Column:0
+Value:1.0
+
+INFO - Row:1
+Column:2
+Value:0.1
+INFO - vectorRow:1
+vectorValue:0.0
+matrixElements:
+Row:1
+Column:2
+Value:0.1
+
+INFO - Row:2
+Column:5
+Value:0.5
+INFO - vectorRow:2
+vectorValue:0.0
+matrixElements:
+Row:2
+Column:5
+Value:0.5
+
+INFO - Row:7
+Column:6
+Value:4.0
+INFO - vectorRow:7
+vectorValue:0.0
+matrixElements:
+Row:7
+Column:6
+Value:4.0
+

@@ -19,16 +19,19 @@ public class Main {
         String input = "/input";
         String output = "/output";
 
-        HashIdRunner hir = new HashIdRunner();
-        hir.run(input + "/edata", output + "/hashidoutput", "vidmap");
-
-        PartitionDictRunner pdr = new PartitionDictRunner(64);
-        pdr.run(output + "/hashidoutput/vidmap-r-*", output + "/temp/partitionedvidmap");
-
-        PartitionEdgeRunner per = new PartitionEdgeRunner(64);
-        per.run(input + "/edata", output + "/temp/partitionededata");
-
-        TranslateEdgeRunner ter = new TranslateEdgeRunner(64, output + "/temp/partitionedvidmap/");
-        ter.run(output + "/temp/partitionededata", output + "/edata");
+//        HashIdRunner hir = new HashIdRunner();
+//        hir.run(input + "/edata", output + "/hashidoutput", "vidmap");
+//
+//        PartitionDictRunner pdr = new PartitionDictRunner(64);
+//        pdr.run(output + "/hashidoutput/vidmap-r-*", output + "/temp/partitionedvidmap");
+//
+//        PartitionEdgeRunner per = new PartitionEdgeRunner(64);
+//        per.run(input + "/edata", output + "/temp/partitionededata");
+//
+//        TranslateEdgeRunner ter = new TranslateEdgeRunner(64, output + "/temp/partitionedvidmap/");
+//        ter.run(output + "/temp/partitionededata", output + "/edata");
+        
+        PreprocessRunner pr = new PreprocessRunner();
+        pr.run(input + "/matrix", input + "/vector", output);
     }
 }

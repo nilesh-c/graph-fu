@@ -78,4 +78,9 @@ public class MultRowIntermediate implements Writable {
         vectorValue.readFields(di);
         matrixElements.readFields(di);
     }
+
+    @Override
+    public String toString() {
+        return "vectorRow:" + vectorRow + "\nvectorValue:" + vectorValue + "\nmatrixElements:\n" + matrixElements;
+    }
 }

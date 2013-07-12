@@ -68,8 +68,7 @@ public class PartitionDictRunner {
         LOG.info("Input = " + inputPath);
         LOG.info("Output = " + outputPath);
         LOG.debug("numChunks = " + numChunks);
-        LOG.info("=======================Done ==============================\n");
-
+        
         try {
             job.waitForCompletion(true);
         } catch (Exception e) {

@@ -53,8 +53,7 @@ public class MultRunner {
         LOG.info("====== Job: Stage 2 of matrix-vector multiplication (iterative stage) ==========");
         LOG.info("Input = " + inputPath);
         LOG.info("Output = " + outputpath);
-        LOG.info("=======================Done ==============================\n");
-        
+                
         try {
             job.waitForCompletion(true);
         } catch (Exception e) {

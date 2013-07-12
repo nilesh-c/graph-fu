@@ -61,8 +61,7 @@ public class TranslateEdgeRunner {
         LOG.info("Output = " + outputPath);
         LOG.debug("numChunks = " + numChunks);
         LOG.debug("vidmap dictionary = " + dictionaryPath);
-        LOG.info("=======================Done ==============================\n");
-
+        
         try {
             job.waitForCompletion(true);
         } catch (Exception e) {

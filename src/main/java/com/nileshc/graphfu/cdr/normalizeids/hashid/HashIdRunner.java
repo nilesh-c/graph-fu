@@ -63,8 +63,7 @@ public class HashIdRunner {
         LOG.info("Input = " + inputPath);
         LOG.info("Output = " + outputPath);
         LOG.debug("Lines per map = " + linespermap);
-        LOG.info("=======================Done ==============================\n");
-
+        
         try {
             job.waitForCompletion(true);
         } catch (Exception e) {

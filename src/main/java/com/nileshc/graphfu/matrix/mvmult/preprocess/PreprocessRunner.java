@@ -55,8 +55,7 @@ public class PreprocessRunner {
         LOG.info("Matrix Input = " + matrixInputPath);
         LOG.info("Vector Input = " + vectorInputPath);
         LOG.info("Output = " + outputpath);
-        LOG.info("=======================Done ==============================\n");
-
+        
         try {
             job.waitForCompletion(true);
         } catch (Exception e) {

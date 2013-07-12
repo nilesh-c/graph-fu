@@ -30,7 +30,7 @@ public class TranslateEdgeRunner {
         this.dictionaryPath = dictionaryPath;
     }
 
-    public void run(String inputPath, String outputPath) throws IOException {
+    public boolean run(String inputPath, String outputPath) throws IOException {
         Configuration configuration = new Configuration();
         configuration.setInt("numChunks", numChunks);
         configuration.set("dictionaryPath", dictionaryPath);
@@ -61,13 +61,14 @@ public class TranslateEdgeRunner {
         LOG.info("Output = " + outputPath);
         LOG.debug("numChunks = " + numChunks);
         LOG.debug("vidmap dictionary = " + dictionaryPath);
-        
+
         try {
             job.waitForCompletion(true);
+            LOG.info("Finished");
+            return job.isSuccessful();
         } catch (Exception e) {
             LOG.error("Unable to wait for job to finish", e);
         }
-
-        LOG.info("Finished");
+        return false;
     }
 }

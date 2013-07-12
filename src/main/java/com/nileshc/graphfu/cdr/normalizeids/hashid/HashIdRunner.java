@@ -27,7 +27,7 @@ public class HashIdRunner {
     private static int linespermap = 6000000;
     private static final Logger LOG = Logger.getLogger(HashIdRunner.class);
 
-    public void run(String inputPath, String outputPath, String vidmap) throws IOException {
+    public boolean run(String inputPath, String outputPath, String vidmap) throws IOException {
         Configuration configuration = new Configuration();
         configuration.set("vidmap", vidmap);
 
@@ -66,11 +66,11 @@ public class HashIdRunner {
         
         try {
             job.waitForCompletion(true);
+            LOG.info("Finished");
+            return job.isSuccessful();
         } catch (Exception e) {
             LOG.error("Unable to wait for job to finish", e);
         }
-
-        LOG.info("Finished");
-
+        return false;
     }
 }

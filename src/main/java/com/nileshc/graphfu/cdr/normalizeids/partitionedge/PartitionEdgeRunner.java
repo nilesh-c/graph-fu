@@ -32,7 +32,7 @@ public class PartitionEdgeRunner {
         this.numChunks = numChunks;
     }
 
-    public void run(String inputPath, String outputPath) throws IOException {
+    public boolean run(String inputPath, String outputPath) throws IOException {
         Configuration configuration = new Configuration();
         configuration.setInt("numChunks", numChunks);
         Job job = null;
@@ -68,13 +68,14 @@ public class PartitionEdgeRunner {
         LOG.info("Input = " + inputPath);
         LOG.info("Output = " + outputPath);
         LOG.debug("numChunks = " + numChunks);
-        
+
         try {
             job.waitForCompletion(true);
+            LOG.info("Finished");
+            return job.isSuccessful();
         } catch (Exception e) {
             LOG.error("Unable to wait for job to finish", e);
         }
-
-        LOG.info("Finished");
+        return false;
     }
 }

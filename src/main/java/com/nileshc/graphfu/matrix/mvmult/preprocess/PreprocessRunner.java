@@ -25,7 +25,7 @@ public class PreprocessRunner {
 
     private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
 
-    public void run(String matrixInputPath, String vectorInputPath, String outputpath) throws IOException {
+    public boolean run(String matrixInputPath, String vectorInputPath, String outputpath) throws IOException {
         Configuration configuration = new Configuration();
         Job job = null;
 
@@ -55,13 +55,14 @@ public class PreprocessRunner {
         LOG.info("Matrix Input = " + matrixInputPath);
         LOG.info("Vector Input = " + vectorInputPath);
         LOG.info("Output = " + outputpath);
-        
+
         try {
             job.waitForCompletion(true);
+            LOG.info("Finished");
+            return job.isSuccessful();
         } catch (Exception e) {
             LOG.error("Unable to wait for job to finish", e);
         }
-
-        LOG.info("Finished");
+        return false;
     }
 }

@@ -25,7 +25,7 @@ public class MultRunner {
 
     private static final Logger LOG = Logger.getLogger(MultRunner.class);
 
-    public void run(String inputPath, String outputpath) throws IOException {
+    public boolean run(String inputPath, String outputpath) throws IOException {
         Configuration configuration = new Configuration();
         Job job = null;
 
@@ -49,17 +49,18 @@ public class MultRunner {
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
         }
-        
+
         LOG.info("====== Job: Stage 2 of matrix-vector multiplication (iterative stage) ==========");
         LOG.info("Input = " + inputPath);
         LOG.info("Output = " + outputpath);
-                
+
         try {
             job.waitForCompletion(true);
+            LOG.info("Finished");
+            return job.isSuccessful();
         } catch (Exception e) {
             LOG.error("Unable to wait for job to finish", e);
         }
-
-        LOG.info("Finished");
+        return false;
     }
 }

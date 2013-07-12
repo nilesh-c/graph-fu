@@ -32,7 +32,7 @@ public class PartitionDictRunner {
         this.numChunks = numChunks;
     }
 
-    public void run(String inputpath, String outputpath) throws IOException {
+    public void run(String inputPath, String outputPath) throws IOException {
         Configuration configuration = new Configuration();
         configuration.setInt("numChunks", numChunks);
         Job job = null;
@@ -41,8 +41,8 @@ public class PartitionDictRunner {
             job = new Job(configuration);
             job.setJarByClass(PartitionDictRunner.class);
 
-            FileInputFormat.addInputPath(job, new Path(inputpath));
-            FileOutputFormat.setOutputPath(job, new Path(outputpath));
+            FileInputFormat.addInputPath(job, new Path(inputPath));
+            FileOutputFormat.setOutputPath(job, new Path(outputPath));
 
             job.setMapperClass(PartitionDictMapper.class);
             job.setReducerClass(PartitionDictReducer.class);
@@ -58,11 +58,17 @@ public class PartitionDictRunner {
             for (int i = 0; i < numChunks; i++) {
                 MultipleOutputs.addNamedOutput(job, outprefix + i, TextOutputFormat.class, Text.class, Text.class);
             }
-            
+
             LazyOutputFormat.setOutputFormatClass(job, TextOutputFormat.class);
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
         }
+
+        LOG.info("====== Job: Partition the map of rawid -> id ==========");
+        LOG.info("Input = " + inputPath);
+        LOG.info("Output = " + outputPath);
+        LOG.debug("numChunks = " + numChunks);
+        LOG.info("=======================Done ==============================\n");
 
         try {
             job.waitForCompletion(true);
@@ -71,10 +77,5 @@ public class PartitionDictRunner {
         }
 
         LOG.info("Finished");
-        LOG.info("====== Job: Partition the map of rawid -> id ==========");
-        LOG.info("Input = " + inputpath);
-        LOG.info("Output = " + outputpath);
-        LOG.debug("numChunks = " + numChunks);
-        LOG.info("=======================Done ==============================\n");
     }
 }

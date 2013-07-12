@@ -51,6 +51,12 @@ public class PreprocessRunner {
             LOG.error("Unable to initialize job", e);
         }
 
+        LOG.info("====== Job: Stage 1 of matrix-vector multiplication ==========");
+        LOG.info("Matrix Input = " + matrixInputPath);
+        LOG.info("Vector Input = " + vectorInputPath);
+        LOG.info("Output = " + outputpath);
+        LOG.info("=======================Done ==============================\n");
+
         try {
             job.waitForCompletion(true);
         } catch (Exception e) {
@@ -58,10 +64,5 @@ public class PreprocessRunner {
         }
 
         LOG.info("Finished");
-        LOG.info("====== Job: Stage 1 of matrix-vector multiplication ==========");
-        LOG.info("Matrix Input = " + matrixInputPath);
-        LOG.info("Vector Input = " + vectorInputPath);
-        LOG.info("Output = " + outputpath);
-        LOG.info("=======================Done ==============================\n");
     }
 }

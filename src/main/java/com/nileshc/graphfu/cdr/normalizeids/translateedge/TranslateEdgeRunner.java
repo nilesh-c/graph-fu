@@ -30,7 +30,7 @@ public class TranslateEdgeRunner {
         this.dictionaryPath = dictionaryPath;
     }
 
-    public void run(String inputpath, String outputpath) throws IOException {
+    public void run(String inputPath, String outputPath) throws IOException {
         Configuration configuration = new Configuration();
         configuration.setInt("numChunks", numChunks);
         configuration.set("dictionaryPath", dictionaryPath);
@@ -40,8 +40,8 @@ public class TranslateEdgeRunner {
             job = new Job(configuration);
             job.setJarByClass(TranslateEdgeRunner.class);
 
-            FileInputFormat.addInputPath(job, new Path(inputpath));
-            FileOutputFormat.setOutputPath(job, new Path(outputpath));
+            FileInputFormat.addInputPath(job, new Path(inputPath));
+            FileOutputFormat.setOutputPath(job, new Path(outputPath));
 
             job.setMapperClass(TranslateEdgeMapper.class);
             job.setReducerClass(TranslateEdgeReducer.class);
@@ -56,6 +56,13 @@ public class TranslateEdgeRunner {
             LOG.error("Unable to initialize job", e);
         }
 
+        LOG.info("====== Job: Partition the input edges by hash(sourceid) ==========");
+        LOG.info("Input = " + inputPath);
+        LOG.info("Output = " + outputPath);
+        LOG.debug("numChunks = " + numChunks);
+        LOG.debug("vidmap dictionary = " + dictionaryPath);
+        LOG.info("=======================Done ==============================\n");
+
         try {
             job.waitForCompletion(true);
         } catch (Exception e) {
@@ -63,10 +70,5 @@ public class TranslateEdgeRunner {
         }
 
         LOG.info("Finished");
-        LOG.info("====== Job: Partition the input edges by hash(sourceid) ==========");
-        LOG.info("Input = " + inputpath);
-        LOG.info("Output = " + outputpath);
-        LOG.debug("numChunks = " + numChunks);
-        LOG.info("=======================Done ==============================\n");
     }
 }

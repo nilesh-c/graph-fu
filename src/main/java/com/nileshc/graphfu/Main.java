@@ -32,8 +32,8 @@ public class Main {
 //        TranslateEdgeRunner ter = new TranslateEdgeRunner(64, output + "/temp/partitionedvidmap/");
 //        ter.run(output + "/temp/partitionededata", output + "/edata");
 
-//        PreprocessRunner pr = new PreprocessRunner();
-//        pr.run(input + "/matrix", input + "/vector", output);
+        PreprocessRunner pr = new PreprocessRunner();
+        pr.run(input + "/matrix", input + "/vector", output);
 
         MultRunner mr = new MultRunner();
         mr.run(output + "/part-r-*", output + "/final");

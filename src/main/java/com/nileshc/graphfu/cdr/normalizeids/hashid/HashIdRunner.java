@@ -27,7 +27,7 @@ public class HashIdRunner {
     private static int linespermap = 6000000;
     private static final Logger LOG = Logger.getLogger(HashIdRunner.class);
 
-    public void run(String inputpath, String outputpath, String vidmap) throws IOException {
+    public void run(String inputPath, String outputPath, String vidmap) throws IOException {
         Configuration configuration = new Configuration();
         configuration.set("vidmap", vidmap);
 
@@ -38,8 +38,8 @@ public class HashIdRunner {
             job.setJarByClass(HashIdRunner.class);
             job.setNumReduceTasks(1);
 
-            FileInputFormat.addInputPath(job, new Path(inputpath));
-            FileOutputFormat.setOutputPath(job, new Path(outputpath));
+            FileInputFormat.addInputPath(job, new Path(inputPath));
+            FileOutputFormat.setOutputPath(job, new Path(outputPath));
 
             job.setMapperClass(HashIdMapper.class);
             job.setReducerClass(HashIdReducer.class);
@@ -59,6 +59,12 @@ public class HashIdRunner {
             LOG.error("Unable to initialize job", e);
         }
 
+        LOG.info("====== Job: Create integer Id maps for vertices ==========");
+        LOG.info("Input = " + inputPath);
+        LOG.info("Output = " + outputPath);
+        LOG.debug("Lines per map = " + linespermap);
+        LOG.info("=======================Done ==============================\n");
+
         try {
             job.waitForCompletion(true);
         } catch (Exception e) {
@@ -66,10 +72,6 @@ public class HashIdRunner {
         }
 
         LOG.info("Finished");
-        LOG.info("====== Job: Create integer Id maps for vertices ==========");
-        LOG.info("Input = " + inputpath);
-        LOG.info("Output = " + outputpath);
-        LOG.debug("Lines per map = " + linespermap);
-        LOG.info("=======================Done ==============================\n");
+
     }
 }

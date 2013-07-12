@@ -25,7 +25,7 @@ public class MultRunner {
 
     private static final Logger LOG = Logger.getLogger(MultRunner.class);
 
-    public void run(String inputpath, String outputpath) throws IOException {
+    public void run(String inputPath, String outputpath) throws IOException {
         Configuration configuration = new Configuration();
         Job job = null;
 
@@ -33,7 +33,7 @@ public class MultRunner {
             job = new Job(configuration);
             job.setJarByClass(MultRunner.class);
 
-            FileInputFormat.addInputPath(job, new Path(inputpath));
+            FileInputFormat.addInputPath(job, new Path(inputPath));
             FileOutputFormat.setOutputPath(job, new Path(outputpath));
 
             job.setMapperClass(MultMapper.class);
@@ -49,7 +49,12 @@ public class MultRunner {
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
         }
-
+        
+        LOG.info("====== Job: Stage 2 of matrix-vector multiplication (iterative stage) ==========");
+        LOG.info("Input = " + inputPath);
+        LOG.info("Output = " + outputpath);
+        LOG.info("=======================Done ==============================\n");
+        
         try {
             job.waitForCompletion(true);
         } catch (Exception e) {
@@ -57,9 +62,5 @@ public class MultRunner {
         }
 
         LOG.info("Finished");
-        LOG.info("====== Job: Stage 2 of matrix-vector multiplication (iterative stage) ==========");
-        LOG.info("Input = " + inputpath);
-        LOG.info("Output = " + outputpath);
-        LOG.info("=======================Done ==============================\n");
     }
 }

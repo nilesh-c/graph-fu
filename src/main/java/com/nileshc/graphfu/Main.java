@@ -7,6 +7,8 @@ import com.nileshc.graphfu.cdr.normalizeids.translateedge.TranslateEdgeRunner;
 import com.nileshc.graphfu.matrix.mvmult.mult.MultRunner;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessReducer;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessRunner;
+import com.nileshc.graphfu.pagerank.vectornorm.VectorNormRunner;
+import com.nileshc.graphfu.pagerank.vectornorm.VectorSumRunner;
 import java.io.IOException;
 
 /**
@@ -32,10 +34,19 @@ public class Main {
 //        TranslateEdgeRunner ter = new TranslateEdgeRunner(64, output + "/temp/partitionedvidmap/");
 //        ter.run(output + "/temp/partitionededata", output + "/edata");
 
-        PreprocessRunner pr = new PreprocessRunner();
-        pr.run(input + "/matrix", input + "/vector", output);
+//        PreprocessRunner pr = new PreprocessRunner();
+//        pr.run(input + "/matrix", input + "/vector", output);
+//
+//        MultRunner mr = new MultRunner();
+//        mr.run(output + "/part-r-*", output + "/final");
 
-        MultRunner mr = new MultRunner();
-        mr.run(output + "/part-r-*", output + "/final");
+        VectorSumRunner vsr = new VectorSumRunner();
+        vsr.run(output + "/final/part-r-*", output + "/vecsum");
+
+        double vecsum = vsr.getVectorSum();
+        System.out.println("BLAH:" + vecsum);
+
+        VectorNormRunner vnr = new VectorNormRunner(vecsum);
+        vnr.run(output + "/final/part-r-*", output + "/vecnorm");
     }
 }

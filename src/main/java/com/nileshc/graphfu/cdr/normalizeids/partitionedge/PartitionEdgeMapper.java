@@ -25,7 +25,6 @@ public class PartitionEdgeMapper extends Mapper<LongWritable, Text, IntWritable,
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        super.setup(context);
         Configuration conf = context.getConfiguration();
         this.numChunks = conf.getInt("numChunks", 256);
     }

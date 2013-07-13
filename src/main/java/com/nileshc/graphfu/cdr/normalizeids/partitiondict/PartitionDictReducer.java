@@ -24,7 +24,6 @@ public class PartitionDictReducer extends Reducer<IntWritable, Text, NullWritabl
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        super.setup(context);
         multipleOutputs = new MultipleOutputs<NullWritable, Text>(context);
         Configuration conf = context.getConfiguration();
     }

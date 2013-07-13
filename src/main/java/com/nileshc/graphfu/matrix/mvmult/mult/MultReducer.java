@@ -25,7 +25,7 @@ public class MultReducer extends Reducer<LongWritable, MultiValueWritable, LongW
 
     private static final Logger LOG = Logger.getLogger(MultReducer.class);
     private DoubleWritable doubleOutput = new DoubleWritable();
-    MultRowIntermediate outputValue = new MultRowIntermediate();
+    private MultRowIntermediate outputValue = new MultRowIntermediate();
 
     @Override
     public void reduce(LongWritable key, Iterable<MultiValueWritable> values, Context context) throws IOException, InterruptedException {

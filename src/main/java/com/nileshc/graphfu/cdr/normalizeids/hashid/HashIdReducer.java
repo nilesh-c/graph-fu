@@ -28,7 +28,6 @@ public class HashIdReducer extends Reducer<Text, NullWritable, LongWritable, Tex
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        super.setup(context);
         multipleOutputs = new MultipleOutputs<LongWritable, Text>(context);
         Configuration conf = context.getConfiguration();
         this.vidmap = conf.get("vidmap");

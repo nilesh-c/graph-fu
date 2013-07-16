@@ -28,12 +28,14 @@ public class MultReducer extends Reducer<LongWritable, MultiValueWritable, LongW
     private DoubleWritable doubleOutput = new DoubleWritable();
     private MultRowIntermediate outputValue = new MultRowIntermediate();
     private double rightHandValue;
+    private double alpha;
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         LOG.addAppender(new ConsoleAppender(new SimpleLayout(), "System.err"));
         Configuration conf = context.getConfiguration();
         rightHandValue = conf.getFloat("righthand", 0);
+        alpha = conf.getFloat("alpha", 0.85f);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class MultReducer extends Reducer<LongWritable, MultiValueWritable, LongW
             }
         }
         outputValue.setVectorRow(key);
-        doubleOutput.set(newVectorValue + rightHandValue);
+        doubleOutput.set(alpha * (newVectorValue + rightHandValue));
         outputValue.setVectorValue(doubleOutput);
         LOG.info("After adding " + rightHandValue + " output becomes: " + outputValue);
         context.write(key, outputValue);

@@ -29,23 +29,13 @@ public class Preprocessor {
         numNodes = hir.getTotalVertexCount();
 
         PartitionDictRunner pdr = new PartitionDictRunner(64);
-        pdr.run(temp + "/vidmap-r-*", temp + "/preprocess/partitionedvidmap");
+        pdr.run(temp + "/vidmap", temp + "/preprocess/partitionedvidmap");
 
         PartitionEdgeRunner per = new PartitionEdgeRunner(64);
         per.run(cdrMatrixEdges, temp + "/preprocess/partitionededata");
 
         TranslateEdgeRunner ter = new TranslateEdgeRunner(64, temp + "/preprocess/partitionedvidmap/");
         ter.run(temp + "/preprocess/partitionededata", normalizedMatrix, EdgeWeightCalculatorImpl.class);
-
-
-//        VectorElementSumRunner vsr = new VectorElementSumRunner();
-//        vsr.run(output + "/final/part-r-*", output + "/vecsum");
-//
-//        double vecsum = vsr.getVectorSum();
-//        System.out.println("BLAH:" + vecsum);
-//
-//        VectorNormRunner vnr = new VectorNormRunner(vecsum);
-//        vnr.run(output + "/final/part-r-*", output + "/vecnorm");
     }
 
     public void run(String cdrMatrixEdges, String normalizedMatrix, String binaryVidMap) throws IOException {

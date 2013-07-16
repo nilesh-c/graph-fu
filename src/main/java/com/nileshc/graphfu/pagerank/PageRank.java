@@ -8,6 +8,7 @@ import com.nileshc.graphfu.cdr.normalizeids.hashid.HashIdRunner;
 import com.nileshc.graphfu.matrix.mvmult.mult.MultRunner;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessRunner;
 import com.nileshc.graphfu.pagerank.initvectors.InitVectorsRunner;
+import com.nileshc.graphfu.pagerank.vectornorm.VectorNormalizer;
 import com.nileshc.graphfu.vector.l2norm.VectorDifferenceL2NormRunner;
 import com.nileshc.graphfu.vector.vvmult.VectorMultRunner;
 import java.io.IOException;
@@ -64,29 +65,57 @@ public class PageRank {
 
     public void run(String probabilityMatrixInput, String vDataInput, long numNodes, String rankVectorOutput, String temp) throws IOException {
         this.checkConvergeInterval = 10;
-        this.currentIteration = 0;
         this.probabilityMatrixInput = probabilityMatrixInput;
         this.vDataInput = vDataInput;
         this.numNodes = numNodes;
         this.rankVectorOutput = rankVectorOutput;
         this.temp = temp;
 
-        InitVectorsRunner ivr = new InitVectorsRunner(numNodes);
-        ivr.run(probabilityMatrixInput, vDataInput, temp + "/initvectors", temp + "/danglingvector", temp + "/rankvectors/rankvector-0");
+        InitVectorsRunner ivr = new InitVectorsRunner(3);
+        ivr.run(probabilityMatrixInput, temp + "/binvdata", temp + "/initvectors", "danglingvector", "rankvector0");
 
         PreprocessRunner pr = new PreprocessRunner();
-        pr.run(probabilityMatrixInput, temp + "/rankvectors/rankvector-0", temp + "/intermatrix-0");
+        pr.run(probabilityMatrixInput, temp + "/initvectors/rankvector0", temp + "/intermatrix0");
 
         VectorMultRunner vmr = new VectorMultRunner();
-        vmr.run(temp + "/intermatrix-0", temp + "/danglingvector", temp + "/vectormult");
-        
-        
-//        MultRunner mr = new MultRunner();
-//        mr.run(temp + "/intermatrix-0", temp + "/intermatrix-1");
+        vmr.run(temp + "/intermatrix0", temp + "/initvectors/danglingvector", temp + "/vmr");
+        deleteFromHDFS(temp + "/vmr", true);
 
-        do {
-            
-        } while (!isFinished());
+        MultRunner mr = new MultRunner(alpha);
+        mr.run(temp + "/intermatrix0", temp + "/intermatrix1", (vmr.getProduct() + 1 - alpha) / numNodes);
+
+        VectorNormalizer.normalize(temp + "/intermatrix1", temp + "intermatrix1-norm");
+
+        this.currentIteration = 1;
+
+        while (!isFinished()) {
+            deleteFromHDFS(getCurrentMatrixVectorPath("/intermatrix"), true);
+            deleteFromHDFS(getPreviousNormalizedMatrixVectorPath("/intermatrix"), true);
+
+            currentIteration++;
+            String currentPath = getCurrentMatrixVectorPath("/intermatrix");
+            String currentNormPath = getCurrentNormalizedMatrixVectorPath("/intermatrix");
+            String previousNormPath = getPreviousNormalizedMatrixVectorPath("/intermatrix");
+
+            vmr.run(previousNormPath, temp + "/initvectors/danglingvector", temp + "/vmr");
+            deleteFromHDFS(temp + "/vmr", true);
+            mr.run(previousNormPath, currentPath, (vmr.getProduct() + 1 - alpha) / numNodes);
+            VectorNormalizer.normalize(currentPath, currentNormPath);
+        }
+
+        fs.rename(new Path(getCurrentNormalizedMatrixVectorPath("/intermatrix")), new Path(rankVectorOutput));
+    }
+
+    public String getCurrentMatrixVectorPath(String directoryName) {
+        return temp + directoryName + currentIteration;
+    }
+
+    public String getCurrentNormalizedMatrixVectorPath(String directoryName) {
+        return temp + directoryName + currentIteration + "-norm";
+    }
+
+    public String getPreviousNormalizedMatrixVectorPath(String directoryName) {
+        return temp + directoryName + (currentIteration - 1) + "-norm";
     }
 
     public void run(String matrixInput, String vDataInput, long numNodes, String vectorOutput) throws IOException {
@@ -97,8 +126,8 @@ public class PageRank {
         if (iterations == 0) {
             if (currentIteration % checkConvergeInterval == 0) {
                 VectorDifferenceL2NormRunner vdnr = new VectorDifferenceL2NormRunner();
-                vdnr.run(temp + "/rankvectors/rankvector-" + currentIteration, temp + "/rankvectors/rankvector-" + (currentIteration - 1), temp + "l2norm");
-                deleteFromHDFS(temp + "l2norm", true);
+                vdnr.run(getCurrentNormalizedMatrixVectorPath("/intermatrix"), getPreviousNormalizedMatrixVectorPath("/intermatrix"), temp + "/vdnr");
+                deleteFromHDFS(temp + "/vdnr", true);
                 return vdnr.getL2Norm() <= epsilon;
             } else {
                 return false;

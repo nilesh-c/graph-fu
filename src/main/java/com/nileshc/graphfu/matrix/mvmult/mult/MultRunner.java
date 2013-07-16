@@ -24,15 +24,16 @@ import org.apache.log4j.Logger;
 public class MultRunner {
 
     private static final Logger LOG = Logger.getLogger(MultRunner.class);
-    private final double rightHandValue;
+    private final double alpha;
 
-    public MultRunner(double rightHandValue) {
-        this.rightHandValue = rightHandValue;
+    public MultRunner(double alpha) {
+        this.alpha = alpha;
     }
 
-    public boolean run(String inputPath, String outputPath) throws IOException {
+    public boolean run(String inputPath, String outputPath, double rightHandValue) throws IOException {
         Configuration configuration = new Configuration();
         configuration.setFloat("righthand", (float) rightHandValue);
+        configuration.setFloat("alpha", (float) alpha);
         Job job = null;
 
         try {

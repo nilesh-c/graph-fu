@@ -13,6 +13,6 @@ import com.nileshc.graphfu.cdr.normalizeids.translateedge.EdgeWeightCalculator;
 public class EdgeWeightCalculatorImpl implements EdgeWeightCalculator {
 
     public double getWeightFor(String edgeData) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Double.parseDouble(edgeData);
     }
 }

@@ -6,6 +6,7 @@ package com.nileshc.graphfu.matrix.io;
 
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.GenericWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Writable;
 
 /**
@@ -16,7 +17,8 @@ public class MultiValueWritable extends GenericWritable {
 
     private static Class[] CLASSES = {
         MatrixElementListWritable.class,
-        DoubleWritable.class
+        DoubleWritable.class,
+        LongWritable.class
     };
 
     public MultiValueWritable() {

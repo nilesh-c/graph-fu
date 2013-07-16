@@ -4,6 +4,7 @@
  */
 package com.nileshc.graphfu.cdr.normalizeids.translateedge;
 
+import com.nileshc.graphfu.cdr.EdgeWeightCalculatorImpl;
 import com.nileshc.graphfu.matrix.io.MatrixElement;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,9 +53,7 @@ public class TranslateEdgeReducer extends Reducer<IntWritable, Text, NullWritabl
         this.dictionaryId = -1;
         fs = FileSystem.get(conf);
         try {
-            edgeWeightCalculator = (EdgeWeightCalculator) Class.forName(conf.get("eweightcalc")).newInstance();
-        } catch (ClassNotFoundException ex) {
-            LOG.info(ex);
+            edgeWeightCalculator = (EdgeWeightCalculator) conf.getClass("eweightcalc", EdgeWeightCalculatorImpl.class).newInstance();
         } catch (InstantiationException ex) {
             LOG.info(ex);
         } catch (IllegalAccessException ex) {
@@ -75,7 +74,6 @@ public class TranslateEdgeReducer extends Reducer<IntWritable, Text, NullWritabl
             if (dict.containsKey(targetId)) {
                 long targetVertex = dict.get(targetId);
                 long sourceVertex = Long.parseLong(sourceId);
-
                 StringBuilder output = new StringBuilder(); // Feed in the edge data and calculate weight
                 while (tokenizer.hasMoreTokens()) {
                     output.append(tokenizer.nextToken()).append(",");

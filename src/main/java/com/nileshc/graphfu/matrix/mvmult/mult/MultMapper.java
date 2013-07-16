@@ -11,7 +11,9 @@ import java.io.IOException;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 
 /**
  *
@@ -23,11 +25,18 @@ public class MultMapper extends Mapper<LongWritable, MultRowIntermediate, LongWr
     private DoubleWritable productValue = new DoubleWritable();
 
     @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+        LOG.addAppender(new ConsoleAppender(new SimpleLayout(), "System.err"));
+    }
+
+    @Override
     public void map(LongWritable key, MultRowIntermediate value, Context context) throws IOException, InterruptedException {
         double vectorValue = value.getVectorValue().get();
         if (vectorValue != 0) {
+            LOG.info("MultRowInter. contains : " + value);
             for (MatrixElement element : value.getMatrixElements()) {
                 productValue.set(element.getValue().get() * vectorValue);
+                LOG.info("Multiplying " + element + " WITH " + vectorValue + " GIVES: " + productValue);
                 context.write(element.getRow(), new MultiValueWritable(productValue));
             }
         }

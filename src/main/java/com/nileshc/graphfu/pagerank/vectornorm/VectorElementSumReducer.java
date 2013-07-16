@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  *
  * @author nilesh
  */
-public class VectorSumReducer extends Reducer<LongWritable, MultRowIntermediate, NullWritable, DoubleWritable> {
+public class VectorElementSumReducer extends Reducer<LongWritable, MultRowIntermediate, NullWritable, DoubleWritable> {
 
     private static final Logger LOG = Logger.getLogger(MultReducer.class);
     private double vectorSum = 0;

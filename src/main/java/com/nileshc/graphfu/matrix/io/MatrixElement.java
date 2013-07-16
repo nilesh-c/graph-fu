@@ -21,48 +21,69 @@ public class MatrixElement implements Writable {
     private LongWritable row = null;
     private LongWritable column = null;
     private DoubleWritable value = null;
-    private BooleanWritable isVector = null;
+    private ElementType elementType;
+
+    private enum ElementType {
+
+        MATRIX,
+        VECTOR,
+        ROW
+    };
 
     public MatrixElement() {
         this.row = null;
         this.column = null;
         this.value = null;
-        this.isVector = null;
+        elementType = null;
     }
 
     public MatrixElement(LongWritable row, LongWritable column, DoubleWritable value) {
         this.row = row;
         this.column = column;
         this.value = value;
-        this.isVector = new BooleanWritable(false);
+        elementType = ElementType.MATRIX;
     }
 
     public MatrixElement(LongWritable row, DoubleWritable value) {
         this.row = row;
         this.column = new LongWritable(0);
         this.value = value;
-        this.isVector = new BooleanWritable(true);
+        elementType = ElementType.VECTOR;
     }
 
-    public void setVectorData(LongWritable row, DoubleWritable value) {
+    public MatrixElement(LongWritable row) {
         this.row = row;
         this.column = new LongWritable(0);
-        this.value = value;
-        this.isVector = new BooleanWritable(true);
+        this.value = new DoubleWritable(0);
+        elementType = ElementType.ROW;
     }
 
     public void setMatrixData(LongWritable row, LongWritable column, DoubleWritable value) {
         this.row = row;
         this.column = column;
         this.value = value;
-        this.isVector = new BooleanWritable(false);
+        elementType = ElementType.MATRIX;
+    }
+
+    public void setVectorData(LongWritable row, DoubleWritable value) {
+        this.row = row;
+        this.column = new LongWritable(0);
+        this.value = value;
+        elementType = ElementType.VECTOR;
+    }
+
+    public void setRowData(LongWritable row) {
+        this.row = row;
+        this.column = new LongWritable(0);
+        this.value = new DoubleWritable(0);
+        elementType = ElementType.ROW;
     }
 
     public void write(DataOutput d) throws IOException {
         row.write(d);
         column.write(d);
         value.write(d);
-        isVector.write(d);
+        d.writeUTF(elementType.name());
     }
 
     public void readFields(DataInput di) throws IOException {
@@ -75,20 +96,25 @@ public class MatrixElement implements Writable {
         if (value == null) {
             value = new DoubleWritable();
         }
-        if (isVector == null) {
-            isVector = new BooleanWritable();
-        }
 
         row.readFields(di);
         column.readFields(di);
         value.readFields(di);
-        isVector.readFields(di);
+        elementType = ElementType.valueOf(di.readUTF());
     }
 
     public boolean isVector() {
-        return isVector.get();
+        return elementType == ElementType.VECTOR;
     }
-    
+
+    public boolean isMatrix() {
+        return elementType == ElementType.MATRIX;
+    }
+
+    public boolean isRow() {
+        return elementType == ElementType.ROW;
+    }
+
     public LongWritable getColumn() {
         return column;
     }
@@ -103,6 +129,6 @@ public class MatrixElement implements Writable {
 
     @Override
     public String toString() {
-        return "MatrixElement Row:" + row + " Column:" + column + " Value:" + value + " isVector:" + isVector.get();
+        return "MatrixElement Row:" + row + " Column:" + column + " Value:" + value + " elementType:" + elementType.name();
     }
 }

@@ -9,6 +9,7 @@ import com.nileshc.graphfu.matrix.io.MatrixElementListWritable;
 import com.nileshc.graphfu.matrix.io.MultRowIntermediate;
 import com.nileshc.graphfu.matrix.io.MultiValueWritable;
 import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Writable;
@@ -26,6 +27,14 @@ public class MultReducer extends Reducer<LongWritable, MultiValueWritable, LongW
     private static final Logger LOG = Logger.getLogger(MultReducer.class);
     private DoubleWritable doubleOutput = new DoubleWritable();
     private MultRowIntermediate outputValue = new MultRowIntermediate();
+    private double rightHandValue;
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+        LOG.addAppender(new ConsoleAppender(new SimpleLayout(), "System.err"));
+        Configuration conf = context.getConfiguration();
+        rightHandValue = conf.getFloat("righthand", 0);
+    }
 
     @Override
     public void reduce(LongWritable key, Iterable<MultiValueWritable> values, Context context) throws IOException, InterruptedException {
@@ -39,8 +48,9 @@ public class MultReducer extends Reducer<LongWritable, MultiValueWritable, LongW
             }
         }
         outputValue.setVectorRow(key);
-        doubleOutput.set(newVectorValue);
+        doubleOutput.set(newVectorValue + rightHandValue);
         outputValue.setVectorValue(doubleOutput);
+        LOG.info("After adding " + rightHandValue + " output becomes: " + outputValue);
         context.write(key, outputValue);
     }
 }

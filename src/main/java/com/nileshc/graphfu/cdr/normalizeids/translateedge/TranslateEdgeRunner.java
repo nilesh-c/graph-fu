@@ -35,10 +35,11 @@ public class TranslateEdgeRunner {
         this.dictionaryPath = dictionaryPath;
     }
 
-    public boolean run(String inputPath, String outputPath) throws IOException {
+    public boolean run(String inputPath, String outputPath, Class<? extends EdgeWeightCalculator> edgeWeightCalculator) throws IOException {
         Configuration configuration = new Configuration();
         configuration.setInt("numChunks", numChunks);
         configuration.set("dictionaryPath", dictionaryPath);
+        configuration.setClass("eweightcalc", edgeWeightCalculator, EdgeWeightCalculator.class);
         Job job = null;
 
         try {
@@ -55,13 +56,15 @@ public class TranslateEdgeRunner {
 
             job.setMapOutputKeyClass(IntWritable.class);
             job.setMapOutputValueClass(Text.class);
-            job.setOutputKeyClass(LongWritable.class);
+            job.setOutputKeyClass(NullWritable.class);
             job.setOutputValueClass(MatrixElement.class);
+
+            job.setOutputFormatClass(SequenceFileOutputFormat.class);
         } catch (Exception e) {
             LOG.error("Unable to initialize job", e);
         }
 
-        LOG.info("====== Job: Partition the input edges by hash(sourceid) ==========");
+        LOG.info("====== Job: Translate edges to new idnormalized edges ==========");
         LOG.info("Input = " + inputPath);
         LOG.info("Output = " + outputPath);
         LOG.debug("numChunks = " + numChunks);

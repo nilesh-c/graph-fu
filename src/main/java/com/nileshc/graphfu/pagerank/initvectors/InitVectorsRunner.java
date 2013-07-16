@@ -7,6 +7,7 @@ package com.nileshc.graphfu.pagerank.initvectors;
 import com.nileshc.graphfu.matrix.io.MatrixElement;
 import com.nileshc.graphfu.matrix.io.MatrixElementInputFormat;
 import com.nileshc.graphfu.matrix.io.MultRowIntermediate;
+import com.nileshc.graphfu.matrix.io.MultiValueWritable;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessMapper;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessReducer;
 import com.nileshc.graphfu.matrix.mvmult.preprocess.PreprocessRunner;
@@ -28,14 +29,14 @@ import org.apache.log4j.Logger;
  */
 public class InitVectorsRunner {
 
-    private static final Logger LOG = Logger.getLogger(PreprocessRunner.class);
+    private static final Logger LOG = Logger.getLogger(InitVectorsRunner.class);
     private final long numNodes;
 
     public InitVectorsRunner(long numNodes) {
         this.numNodes = numNodes;
     }
 
-    public boolean run(String inputPath, String outputPath, String danglingVector, String rankVector) throws IOException {
+    public boolean run(String matrixInputPath, String vdataInputPath, String outputPath, String danglingVector, String rankVector) throws IOException {
         Configuration configuration = new Configuration();
         configuration.set("danglingvector", danglingVector);
         configuration.set("rankvector", rankVector);
@@ -44,9 +45,10 @@ public class InitVectorsRunner {
 
         try {
             job = new Job(configuration);
-            job.setJarByClass(PreprocessRunner.class);
+            job.setJarByClass(InitVectorsRunner.class);
 
-            FileInputFormat.addInputPath(job, new Path(inputPath));
+            FileInputFormat.addInputPath(job, new Path(matrixInputPath));
+            FileInputFormat.addInputPath(job, new Path(vdataInputPath));
             FileOutputFormat.setOutputPath(job, new Path(outputPath));
 
             job.setMapperClass(InitVectorsMapper.class);
@@ -55,11 +57,11 @@ public class InitVectorsRunner {
             job.setMapOutputKeyClass(LongWritable.class);
             job.setMapOutputValueClass(MatrixElement.class);
             job.setOutputKeyClass(NullWritable.class);
-            job.setOutputValueClass(MatrixElement.class);
+            job.setOutputValueClass(NullWritable.class);
 
             //set MultipleOutputs
             MultipleOutputs.addNamedOutput(job, rankVector, SequenceFileOutputFormat.class, NullWritable.class, MatrixElement.class);
-            MultipleOutputs.addNamedOutput(job, danglingVector, SequenceFileOutputFormat.class, NullWritable.class, MatrixElement.class);
+            MultipleOutputs.addNamedOutput(job, danglingVector, SequenceFileOutputFormat.class, LongWritable.class, MultRowIntermediate.class);
 
             job.setInputFormatClass(SequenceFileInputFormat.class);
             job.setOutputFormatClass(SequenceFileOutputFormat.class);
@@ -69,8 +71,9 @@ public class InitVectorsRunner {
             LOG.error("Unable to initialize job", e);
         }
 
-        LOG.info("====== Job: Stage 1 of matrix-vector multiplication ==========");
-        LOG.info("Matrix Input = " + inputPath);
+        LOG.info("====== Job: Initialize rank vector and compute dangling node vector ==========");
+        LOG.info("Matrix input = " + matrixInputPath);
+        LOG.info("vdata input = " + vdataInputPath);
         LOG.info("Output = " + outputPath);
 
         try {

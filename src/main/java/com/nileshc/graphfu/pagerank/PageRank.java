@@ -34,22 +34,6 @@ public class PageRank {
     private String temp;
     private FileSystem fs;
 
-    public double getEpsilon() {
-        return epsilon;
-    }
-
-    public void setEpsilon(double epsilon) {
-        this.epsilon = epsilon;
-    }
-
-    public int getIterations() {
-        return iterations;
-    }
-
-    public void setIterations(int iterations) {
-        this.iterations = iterations;
-    }
-
     public PageRank(double alpha, double epsilon) {
         this.alpha = alpha;
         this.epsilon = epsilon;
@@ -106,15 +90,15 @@ public class PageRank {
         fs.rename(new Path(getCurrentNormalizedMatrixVectorPath("/intermatrix")), new Path(rankVectorOutput));
     }
 
-    public String getCurrentMatrixVectorPath(String directoryName) {
+    private String getCurrentMatrixVectorPath(String directoryName) {
         return temp + directoryName + currentIteration;
     }
 
-    public String getCurrentNormalizedMatrixVectorPath(String directoryName) {
+    private String getCurrentNormalizedMatrixVectorPath(String directoryName) {
         return temp + directoryName + currentIteration + "-norm";
     }
 
-    public String getPreviousNormalizedMatrixVectorPath(String directoryName) {
+    private String getPreviousNormalizedMatrixVectorPath(String directoryName) {
         return temp + directoryName + (currentIteration - 1) + "-norm";
     }
 

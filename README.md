@@ -1,7 +1,7 @@
 Source code for PageRank implementation in Hadoop
 =================================================
 
-Note: How-to-use wiki pages will be added soon.
+**Note: ** This repository is deprecated. Please refer to https://github.com/nilesh-c/graphfu which will be updated soon with a single-stage blocked MV multiplication algorithm-based PageRank.
 
 ## CDR Preprocessing
 The CDR dataset is anonymized and the output is stored in a custom Writable-subclass format, using Hadoop’s *SequenceFileOutputFormat*. For anonymization, the approach used by [Intel Graph-builder](http://graphlab.org/intel-graphbuilder/) is used. Dictionary based compression is applied to normalize the graph IDs, essentially hiding the telecom subscriber’s phone number and replacing it with a new mapped node ID. A map task creates a keyvalue dictionary, indexed by ordered integers and alphabetically, of all string values appearing in the adjacency list and edge/vertex data structures. The dictionary is then sharded across machines and co-located with shards of the unconverted edge list sorted alphabetically by source vertex. The local dictionaries are then used to convert the source vertex labels to integers. The edge list is then reshuffled to alphabetically shard it by destination vertex and the integer substitution repeated. This way we get a new edge list with normalized IDs, starting from 1 to N (number of vertices in the graph). After this, the obtained graph has to be row-normalized to obtained PageRank’s sparse probability vector H. The source code for this can be found in the **com.nileshc.graphfu.cdr.normalizeids** package. The row normalizer can be found at **com.nileshc.graphfu.matrix.rownormalize**.
